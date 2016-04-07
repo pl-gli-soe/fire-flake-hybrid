@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} MainForm 
    Caption         =   "Main"
-   ClientHeight    =   1620
+   ClientHeight    =   2235
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   8160
@@ -31,6 +31,15 @@ Private Sub CommandButton1_Click()
     Else
         Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit = CDate(Now + 50 * 7)
+    End If
+    
+    ' ffh 3.99
+    If MainForm.DTPicker2.Enabled = True Then
+        ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
+        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+    Else
+        Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ff.p_limit_delivery = CDate(Now + 100)
     End If
     ' tutaj w sposob prosty
     ';
@@ -64,6 +73,17 @@ Private Sub EnableLimitDateCheckBox_Click()
     End If
 End Sub
 
+Private Sub EnableLimitDateCheckBox2_Click()
+
+
+    If MainForm.EnableLimitDateCheckBox2.Value = True Then
+        MainForm.DTPicker2.Enabled = True
+    ElseIf MainForm.EnableLimitDateCheckBox2.Value = False Then
+        MainForm.DTPicker2.Enabled = False
+    End If
+
+End Sub
+
 Private Sub RunDaily_Click()
     MainForm.hide
     
@@ -88,6 +108,16 @@ Private Sub RunDaily_Click()
     Else
         Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit = CDate(Now + 100)
+    End If
+    
+    
+    ' ffh 3.99
+    If MainForm.DTPicker2.Enabled = True Then
+        ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
+        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+    Else
+        Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ff.p_limit_delivery = CDate(Now + 100)
     End If
     ' tutaj w sposob prosty
     ';
@@ -128,6 +158,15 @@ Private Sub RunHourly_Click()
         Sheets("register").Range("limitDate") = CDate(Now + 100)
         ff.p_limit = CDate(Now + 100)
     End If
+    
+    ' ffh 3.99
+    If MainForm.DTPicker2.Enabled = True Then
+        ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
+        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+    Else
+        Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ff.p_limit_delivery = CDate(Now + 100)
+    End If
     ' tutaj w sposob prosty
     ';
     '
@@ -160,6 +199,3 @@ Private Sub TemplateBtn_Click()
     TemplateConfig.show
 End Sub
 
-Private Sub UserForm_Click()
-
-End Sub

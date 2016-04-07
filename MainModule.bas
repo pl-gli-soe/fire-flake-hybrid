@@ -1,6 +1,7 @@
 Attribute VB_Name = "MainModule"
 Public Sub run_ff(ictrl As IRibbonControl)
     MainForm.DTPicker1.Value = Now
+    MainForm.DTPicker2.Value = Now
     MainForm.ComboBoxColors.Clear
     MainForm.ComboBoxColors.AddItem CStr(Sheets("register").Range("KOLORY"))
     MainForm.ComboBoxColors.AddItem CStr(Sheets("register").Range("KOLORY").Offset(1, 0))

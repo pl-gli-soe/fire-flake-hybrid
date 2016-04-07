@@ -43,10 +43,6 @@ Private Sub Class_Initialize()
     out_of_scope = False
 End Sub
 
-Private Sub Class_Terminate()
-    
-End Sub
-
 Private Property Let ITransit_mDeliveryDate(RHS As Date)
     delivery_date = RHS
 End Property

@@ -107,7 +107,7 @@ Private Property Get IIteracja_DOH() As String
     IIteracja_DOH = CStr(Cells(ir, 9))
 End Property
 
-Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As StatusHandler, limit As Date)
+Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As StatusHandler, limit As Date, limit_del As Date)
 
         i_mgo.sendKeys "<Clear>"
         i_mgo.sendKeys "ms9pop00 <Enter>"
@@ -136,7 +136,7 @@ Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As Status
         IIteracja_Qhold = i_mgo.pMS9POP00.QHD
         IIteracja_MISC = i_mgo.pMS9POP00.MISC
         IIteracja_StdPack = i_mgo.pMS9POP00.STD_PACK
-        IIteracja_SheetDef = "daily " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " " & ActiveSheet.Name
+        IIteracja_SheetDef = "daily " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
         
         
         ' komentarz z kompleksowymi danymi z POPa
@@ -257,7 +257,7 @@ End Property
 
 ' wypelnianie danych w item_collection na podstawie danych z mgo
 ' =======================================================================================
-Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
+Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, limit_del As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
 
     ' rusztowanie powinno byc zbudowane na bazie rqms
     ' i dopiero na polozyc bedzie mozna PUSy i ASNy
@@ -319,7 +319,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     ' Debug.Assert IIteracja_Partnum <> "13364342"
     
     ' tworzenie_kolekcji_tranzytow i_mgo As MGO, item As IItem, limit As Date, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
-    tworzenie_tranzytow.towrzenie_tranzytow_2 sh, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
+    tworzenie_tranzytow.towrzenie_tranzytow_2 sh, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
     
     sh.progress_increase
     ' ===================================================================================

@@ -18,14 +18,6 @@ Attribute VB_Exposed = False
 '
 ' interface with 2 proc on changing daily layout
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Sub EbalLayoutON()
 
 End Sub

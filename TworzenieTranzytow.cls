@@ -20,12 +20,8 @@ Private Sub Class_Initialize()
     flaga_miejsca_w_kolekcji = 1
 End Sub
 
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
@@ -57,7 +53,7 @@ Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer
     ' Debug.Assert IIteracja_Partnum <> "13447214"
     
     ' procedura z zaldaowaniem wszystkich danych do nyrc
-    zaladuj_do_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+    zaladuj_do_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     
     ' sprawdz ktore faktycznie tranzyty nie sa jeszcze zabookowane
     ' oczywiscie przyda sie tutaj przeszukiwanie binarne bedzie szybciuchniej
@@ -69,17 +65,17 @@ Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer
 End Sub
 
 Private Sub zaladuj_do_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
     If CStr(i_mgo.getString(1, 2, 8)) = "ZK7PPUM0" Then
         part_posiada_pusy = True
-        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     Else
         part_posiada_pusy = False
     End If
-    p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+    p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     
 
 End Sub
@@ -392,7 +388,7 @@ End Sub
 
 
 Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
@@ -430,14 +426,14 @@ Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, 
     
     If CStr(i_mgo.getString(22, 2, 5)) = "R6285" Then
         ' ASNs
-        p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+        p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
         sth.progress_increase
         ' jesli przeszlismy do strony z danymi znaczy ze mozna kontynuowac algorytm
     ElseIf CStr(i_mgo.getString(1, 2, 8)) = "ZK7PPUM0" Then
         ' PUSes
         
-        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
-        p_towrzenie_tranzytow_on_ms9ph100 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+        p_towrzenie_tranzytow_on_ms9ph100 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
         sth.progress_increase
     End If
     
@@ -446,7 +442,7 @@ Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, 
 End Sub
 
 Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
 
@@ -505,6 +501,7 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
                 m_str = CStr(i_mgo.pMS9PO400.EDA(Int(x)))
                 If m_str <> "______" Then
                 
+                    If CDate(i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.EDA(Int(x)))) <= CDate(Format(limit_del, "yyyy-mm-dd")) Then
                     If CDate(i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.SDATE(Int(x)))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
                 
                         txt_time = Left(i_mgo.pMS9PO400.ETA(Int(x)), 2) & ":" & Right(i_mgo.pMS9PO400.ETA(Int(x)), 2)
@@ -514,7 +511,9 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
                         
                         Set temp_trans = Nothing
                         Set temp_trans = New ASN
+                        On Error Resume Next
                         temp_trans.mDeliveryDate = i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.EDA(Int(x)))
+                        On Error Resume Next
                         temp_trans.mDeliveryTime = CDate(Format(txt_time, "hh:mm"))
                         temp_trans.mNotYetReceived = True
                         temp_trans.mName = i_mgo.pMS9PO400.SID(Int(x))
@@ -538,6 +537,7 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
                         End If
                         
                     End If
+                    End If
                 End If
             Next x
             
@@ -557,7 +557,7 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
 End Sub
 
 Private Sub p_tworzenie_tranzytow_on_zk7ppum0(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
@@ -615,54 +615,57 @@ Private Sub p_tworzenie_tranzytow_on_zk7ppum0(ByRef sth As StatusHandler, ByRef 
                 ' Debug.Print CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x)))
             
                 If i_mgo.pZK7PPUM0.plt(Int(x)) <> "" Then
-                
-                    If CDate(i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.PU_DATE(Int(x)))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
-                
-                        txt_time = take_time_on_zk7ppum0(Int(x), i_mgo)
-                        
-                        
-                        
-                        Set temp_trans = Nothing
-                        Set temp_trans = New pus
-                        temp_trans.mDeliveryDate = i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.DEL_DATE(Int(x)))
-                        temp_trans.mDeliveryTime = CDate(Format(CStr(txt_time), "hh:mm"))
-                        temp_trans.mName = CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x)))
-                        temp_trans.mPickupDate = i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.PU_DATE(Int(x)))
-                        
-                        ' Debug.Assert Not temp_trans.mName = "EIS101076"
-                        
-                        If CStr(Format(temp_trans.mPickupDate, "yyyy-mm-dd")) = CStr(Format(Now, "yyyy-mm-dd")) Then
-                            
-                            ' temp_trans.mTTLessThan24h = True
-                            ' sciaganie pus time z ppud0
-                            ' funkcja pickup_time_z_ppud0
-                            pu_time = pickup_time_z_ppud0(i_mgo, CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x))))
+                    If CDate(i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.DEL_DATE(Int(x)))) <= CDate(Format(limit_del, "yyyy-mm-dd")) Then
+                        If CDate(i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.PU_DATE(Int(x)))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
+                    
+                            txt_time = take_time_on_zk7ppum0(Int(x), i_mgo)
                             
                             
-                            ' go back to current view from ppus0
-                            x = go_back_to_current_view_in_ppus0(i_mgo, check_past, IIteracja_PlantName, IIteracja_Partnum, temp_trans.mName, Int(licznik_f8))
-                        Else
-                            pu_time = "00:00"
-                        End If
-                        
-                        'temp_trans.mPickupTime = CDate(Format(CStr(txt_time), "00:00"))
-                        temp_trans.mPickupTime = CDate(Format(CStr(pu_time), "hh:mm"))
-                        temp_trans.mQty = i_mgo.pZK7PPUM0.PART_QTY(Int(x))
-                        temp_trans.mRoute = i_mgo.pZK7PPUM0.route(Int(x))
-                        ' domyslnie true na not yet received
-                        ' domyslnie false na out of the scope
-                        
-                        temp_trans.mOnPop = False
-                        
-                        Dim tmp_lng_date As Date
-                        tmp_lng_date = CDate(CStr(temp_trans.mDeliveryDate) & " " & CStr(temp_trans.mDeliveryTime))
-                        
-                        If (first_date > tmp_lng_date) Or (last_date < tmp_lng_date) Then
-                            temp_trans.mOutOfScope = True
-                        End If
-                        
-                        If last_date >= tmp_lng_date Then
-                            not_yet_received_collection.Add temp_trans
+                            
+                            Set temp_trans = Nothing
+                            Set temp_trans = New pus
+                            On Error Resume Next
+                            temp_trans.mDeliveryDate = i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.DEL_DATE(Int(x)))
+                            On Error Resume Next
+                            temp_trans.mDeliveryTime = CDate(Format(CStr(txt_time), "hh:mm"))
+                            temp_trans.mName = CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x)))
+                            temp_trans.mPickupDate = i_mgo.convertToDateFromZK7PPUM0Date(i_mgo.pZK7PPUM0.PU_DATE(Int(x)))
+                            
+                            ' Debug.Assert Not temp_trans.mName = "EIS101076"
+                            
+                            If CStr(Format(temp_trans.mPickupDate, "yyyy-mm-dd")) = CStr(Format(Now, "yyyy-mm-dd")) Then
+                                
+                                ' temp_trans.mTTLessThan24h = True
+                                ' sciaganie pus time z ppud0
+                                ' funkcja pickup_time_z_ppud0
+                                pu_time = pickup_time_z_ppud0(i_mgo, CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x))))
+                                
+                                
+                                ' go back to current view from ppus0
+                                x = go_back_to_current_view_in_ppus0(i_mgo, check_past, IIteracja_PlantName, IIteracja_Partnum, temp_trans.mName, Int(licznik_f8))
+                            Else
+                                pu_time = "00:00"
+                            End If
+                            
+                            'temp_trans.mPickupTime = CDate(Format(CStr(txt_time), "00:00"))
+                            temp_trans.mPickupTime = CDate(Format(CStr(pu_time), "hh:mm"))
+                            temp_trans.mQty = i_mgo.pZK7PPUM0.PART_QTY(Int(x))
+                            temp_trans.mRoute = i_mgo.pZK7PPUM0.route(Int(x))
+                            ' domyslnie true na not yet received
+                            ' domyslnie false na out of the scope
+                            
+                            temp_trans.mOnPop = False
+                            
+                            Dim tmp_lng_date As Date
+                            tmp_lng_date = CDate(CStr(temp_trans.mDeliveryDate) & " " & CStr(temp_trans.mDeliveryTime))
+                            
+                            If (first_date > tmp_lng_date) Or (last_date < tmp_lng_date) Then
+                                temp_trans.mOutOfScope = True
+                            End If
+                            
+                            If last_date >= tmp_lng_date Then
+                                not_yet_received_collection.Add temp_trans
+                            End If
                         End If
                     End If
                 End If
@@ -749,7 +752,7 @@ Private Function go_back_to_current_view_in_ppus0(i_mgo As MGO, check_past, IIte
 End Function
 
 Private Sub p_towrzenie_tranzytow_on_ms9ph100(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
         

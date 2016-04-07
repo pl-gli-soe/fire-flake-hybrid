@@ -29,10 +29,6 @@ Private Sub Class_Initialize()
     exit_from_sub = False
 End Sub
 
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Sub check_selection_on_date_to_extend(arg As Range)
     
     
