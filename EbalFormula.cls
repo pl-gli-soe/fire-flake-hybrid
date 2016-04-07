@@ -31,14 +31,6 @@ Public Property Let fl(arg As String)
     fromula = CStr(arg)
 End Property
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Function fill_first_day() As String
     '            CBAL    MISC   NYR    RQM   TRANS
     formula = "=RC[-15]-RC[-7]+RC[-6]-RC[-2]+RC[-1]"

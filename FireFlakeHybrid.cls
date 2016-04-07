@@ -41,15 +41,25 @@ Private instance_tokenizator As Tokenizator
 
 Private catch_err As CatchError
 Private date_limit As Date
+Private date_limit_delivery As Date
 Private first_item As IItem
 
-' set, let dla pol
+' set, let dla pol - limit pickup & delivery
 Public Property Get p_limit() As Date
     p_limit = date_limit
 End Property
 
 Public Property Let p_limit(arg As Date)
+
     date_limit = arg
+End Property
+
+Public Property Let p_limit_delivery(arg As Date)
+    date_limit_delivery = arg
+End Property
+
+Public Property Get p_limit_delivery() As Date
+    p_limit = date_limit_delivery
 End Property
 
 Public Property Get p_instance_iteration() As IIteracja
@@ -335,10 +345,10 @@ Public Sub create_tear_down(item As IItem)
         
         ' instance_iteration.take_first_17th_columns instance_mgo
         ' download std data from ms9pop00
-        instance_iteration.DownloadGeneralData instance_mgo, instance_status_handler, date_limit
+        instance_iteration.DownloadGeneralData instance_mgo, instance_status_handler, date_limit, date_limit_delivery
         instance_status_handler.progress_increase
         
-        instance_iteration.PrepareItemCollection instance_mgo, item, date_limit, , instance_status_handler, instance_tokenizator
+        instance_iteration.PrepareItemCollection instance_mgo, item, date_limit, date_limit_delivery, , instance_status_handler, instance_tokenizator
         instance_status_handler.progress_increase
             
         ' problematyczne to wait_for_mgo ;/

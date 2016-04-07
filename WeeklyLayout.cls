@@ -40,10 +40,6 @@ Private hybrid_iteration As IIteracja
 Private Sub Class_Initialize()
 End Sub
 
-Private Sub Class_Terminate()
-End Sub
-
-
 ' implementacja dla rozwijania i zwijania rqm i intransit
 Private Sub IEbalLayout_EbalLayoutOFF()
 

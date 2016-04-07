@@ -17,14 +17,6 @@ Public Property Get sesja() As Object
     Set sesja = Sess0
 End Property
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Property Get pn() As String
   pn = Trim(Sess0.screen.getString(3, 19, 8))
 End Property

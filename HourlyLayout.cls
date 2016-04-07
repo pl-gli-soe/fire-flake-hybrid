@@ -23,15 +23,6 @@ Attribute VB_Exposed = False
 Implements ILayout
 
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
-
 Private Property Let ILayout_AllPartNumbers(RHS As Long)
     Sheets("register").Range("allParts") = RHS
 End Property

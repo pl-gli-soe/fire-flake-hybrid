@@ -30,6 +30,3 @@ Private Sub Class_Initialize()
     scope = 0
 End Sub
 
-Private Sub Class_Terminate()
-
-End Sub
