@@ -100,111 +100,114 @@ Private Sub compare_for_not_yet_received_and_delete_duplicates(ByRef sth As Stat
     '      MsgBox t_o.mName & " " & t_o.mPickupDate & " " & t_o.mPickupTime & " " & t_o.mQty & " " & t_o.mDeliveryTime
     'Next i
     
-    For i = 1 To not_yet_received_collection.COUNT
-    
-        Set t_o = not_yet_received_collection.item(i)
+    If not_yet_received_collection.COUNT > 1 Then
         
-        ' Debug.Assert Not t_o.mName Like "*EIS101*"
+        For i = 1 To not_yet_received_collection.COUNT
         
-        For j = i + 1 To not_yet_received_collection.COUNT
-        
-        
-            ' oczywiscie non sens porownywac itemy w tych samych miejscach bo to ten sam po krotce
-            ' wiec:
-            If j > i Then
+            Set t_o = not_yet_received_collection.item(i)
             
-                Set t_i = not_yet_received_collection.item(j)
+            ' Debug.Assert Not t_o.mName Like "*EIS101*"
+            
+            For j = i + 1 To not_yet_received_collection.COUNT
+            
+            
+                ' oczywiscie non sens porownywac itemy w tych samych miejscach bo to ten sam po krotce
+                ' wiec:
+                If j > i Then
                 
-                ' Debug.Assert CStr(t_o.mName) <> "PO1146232"
-                ' tutaj nalezy mi sie krotkie wyjasnienie algorytmu poniewaz pisalem to juz
-                ' jakis czas temu
-                ' i myslalem ze jest to klarowne a jednak okazalo sie ze nie tak bardzo
-                '
-                ' po pierwsze sprawdzamy czy zawartosci pickupa nie jest pusta a to wynika z elementu ktory znajduje
-                ' sie pozniej, czyli:
-                '
-                ' If t_o.mOnPop Then
-                '   t_o.mQty = 0
-                ' ElseIf t_i.mOnPop Then
-                '   t_i.mQty = 0
-                ' End If
-                ' tutaj troche ryzykjowny
-                ' kodzik poniewaz zmienia dane ktore jeszcze iteracja nie przejrzala
-                ' co za tym idzie jeden falszywy krok i jestem w powaznych tarapatach :P 2014-03-17
-                '
-                If (t_o.mName = t_i.mName) And (CStr(t_o.mDeliveryDate) = CStr(t_i.mDeliveryDate)) Then
+                    Set t_i = not_yet_received_collection.item(j)
                     
-                    
-                    
-                    ' tutaj znajduje sie ten kluczowy element kodu
-                    ' ktory zeruje wszystko na wariata
-                    ' na szczescie iteracja jest tak napsiana ze nigdy dwa razy to samo porownanie nie nastapi
-                    ' zatem moge sobie pozwolic na taka ekstrawagancje
-                    If t_o.mOnPop Then
-                        t_o.mQty = 0
-                    ElseIf t_i.mOnPop Then
-                        t_i.mQty = 0
+                    ' Debug.Assert CStr(t_o.mName) <> "PO1146232"
+                    ' tutaj nalezy mi sie krotkie wyjasnienie algorytmu poniewaz pisalem to juz
+                    ' jakis czas temu
+                    ' i myslalem ze jest to klarowne a jednak okazalo sie ze nie tak bardzo
+                    '
+                    ' po pierwsze sprawdzamy czy zawartosci pickupa nie jest pusta a to wynika z elementu ktory znajduje
+                    ' sie pozniej, czyli:
+                    '
+                    ' If t_o.mOnPop Then
+                    '   t_o.mQty = 0
+                    ' ElseIf t_i.mOnPop Then
+                    '   t_i.mQty = 0
+                    ' End If
+                    ' tutaj troche ryzykjowny
+                    ' kodzik poniewaz zmienia dane ktore jeszcze iteracja nie przejrzala
+                    ' co za tym idzie jeden falszywy krok i jestem w powaznych tarapatach :P 2014-03-17
+                    '
+                    If (t_o.mName = t_i.mName) And (CStr(t_o.mDeliveryDate) = CStr(t_i.mDeliveryDate)) Then
+                        
+                        
+                        
+                        ' tutaj znajduje sie ten kluczowy element kodu
+                        ' ktory zeruje wszystko na wariata
+                        ' na szczescie iteracja jest tak napsiana ze nigdy dwa razy to samo porownanie nie nastapi
+                        ' zatem moge sobie pozwolic na taka ekstrawagancje
+                        If t_o.mOnPop Then
+                            t_o.mQty = 0
+                        ElseIf t_i.mOnPop Then
+                            t_i.mQty = 0
+                        End If
+                        
+                        
+                        ' ten zapis ponizej nadaje pewnosci ze niezaleznie od elementu kolekcji
+                        ' co jest calkiem super wg mnie
+                        t_o.mOnPop = True
+                        t_i.mOnPop = True
+                        Exit For
                     End If
                     
-                    
-                    ' ten zapis ponizej nadaje pewnosci ze niezaleznie od elementu kolekcji
-                    ' co jest calkiem super wg mnie
-                    t_o.mOnPop = True
-                    t_i.mOnPop = True
-                    Exit For
                 End If
+            
+            
+            Next j
+            
+            
+            ' wyzerowane zostaly wszystkie transporty ktore zostaly zdublowane na po400
+            ' trzeba teraz sprawdzic wszystkie not yet received oraz inne glupie warunki
+            ' Debug.Print t_o.mName
+            
+            
+            ' OBSOLETE
+            'If t_o.mDeliveryDate < CDate(Format(Now, "yyyy-mm-dd")) Then
+            '    If Not t_o.mOnPop Then
+            '            t_o.mQty = 0
+            '    End If
+            'Else
+            '    If Not t_o.mOnPop Then
+            '        If t_o.mDeliveryDate = t_o.mPickupDate Then
+            '                If t_o.mPickupDate < CDate(Format(Now, "yyyy-mm-dd")) Then
+            '                    t_o.mQty = 0
+            '                End If
+            '        Else
+            '            If t_o.mPickupTime < CDate(Format(Now, "hh:mm")) Then
+            '                t_o.mQty = 0
+            '            End If
+            '        End If
+            '    End If
+            'End If
+            
+            
+            ' new 2014-03-17
+            ' sprawdzam scope dla podwojonych z MS9PO400 - property on POP
+            ' dodatkowo od razu ignorujemy "puste"
+            If t_o.mQty > 0 Then
+                If t_o.mOnPop Then
                 
-            End If
-        
-        
-        Next j
-        
-        
-        ' wyzerowane zostaly wszystkie transporty ktore zostaly zdublowane na po400
-        ' trzeba teraz sprawdzic wszystkie not yet received oraz inne glupie warunki
-        ' Debug.Print t_o.mName
-        
-        
-        ' OBSOLETE
-        'If t_o.mDeliveryDate < CDate(Format(Now, "yyyy-mm-dd")) Then
-        '    If Not t_o.mOnPop Then
-        '            t_o.mQty = 0
-        '    End If
-        'Else
-        '    If Not t_o.mOnPop Then
-        '        If t_o.mDeliveryDate = t_o.mPickupDate Then
-        '                If t_o.mPickupDate < CDate(Format(Now, "yyyy-mm-dd")) Then
-        '                    t_o.mQty = 0
-        '                End If
-        '        Else
-        '            If t_o.mPickupTime < CDate(Format(Now, "hh:mm")) Then
-        '                t_o.mQty = 0
-        '            End If
-        '        End If
-        '    End If
-        'End If
-        
-        
-        ' new 2014-03-17
-        ' sprawdzam scope dla podwojonych z MS9PO400 - property on POP
-        ' dodatkowo od razu ignorujemy "puste"
-        If t_o.mQty > 0 Then
-            If t_o.mOnPop Then
-            
-                ' troche restrykcyjne ale jesli stanie sie to skasuje takie male ryzyko zawodowe
-                ' Debug.Print t_o.mName
-                If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) > Now Then
-                    t_o.mQty = 0
-                End If
-            
-            Else ' not on pop
-                If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) <= Now Then
-                    t_o.mQty = 0
+                    ' troche restrykcyjne ale jesli stanie sie to skasuje takie male ryzyko zawodowe
+                    ' Debug.Print t_o.mName
+                    If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) > Now Then
+                        t_o.mQty = 0
+                    End If
+                
+                Else ' not on pop
+                    If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) <= Now Then
+                        t_o.mQty = 0
+                    End If
                 End If
             End If
-        End If
-        
-    Next i
+            
+        Next i
+    End If
 End Sub
 
 Private Sub dopasuj_dane_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
