@@ -17,14 +17,6 @@ Public Property Get sesja() As Object
     Set sesja = Sess0
 End Property
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Property Let pn(arg As String)
     Sess0.screen.putString CStr(arg), 3, 22
 End Property

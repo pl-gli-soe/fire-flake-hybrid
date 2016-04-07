@@ -18,17 +18,6 @@ Public Property Get sesja() As Object
     Set sesja = Sess0
 End Property
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
-
-
-
 Public Property Get plt() As String
     plt = Trim(Sess0.screen.getString(3, 8, 2))
 End Property

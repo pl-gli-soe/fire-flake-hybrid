@@ -19,14 +19,6 @@ Attribute VB_Exposed = False
 ' interface 4 daily & hourly
 
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Property Get Partnum() As String
 End Property
 
@@ -138,10 +130,10 @@ End Property
 Public Sub AddItem(arg As IItem)
 End Sub
 
-Public Sub PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
+Public Sub PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, limit_del As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
 End Sub
 
-Public Sub DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandler, limit As Date)
+Public Sub DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandler, limit As Date, limit_del As Date)
 End Sub
 
 Public Property Get NotYetReceivedCollection() As Collection

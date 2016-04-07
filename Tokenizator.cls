@@ -78,10 +78,6 @@ Private Sub Class_Initialize()
     flaga_czy_rqm_adr_table_jest_gotowy = False
 End Sub
 
-Private Sub Class_Terminate()
-
-End Sub
-
 Private Sub solve_query()
 
     Set rqm_adr_table = Nothing

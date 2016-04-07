@@ -11,14 +11,6 @@ Implements IMGOScreen
 
 
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Private Property Get IMGOScreen_screenName() As Date
 
 End Property

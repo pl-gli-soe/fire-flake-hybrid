@@ -115,7 +115,7 @@ Private Property Let IIteracja_DOH(RHS As String)
     Cells(ir + 2, 5) = CStr(RHS)
 End Property
 
-Private Sub IIteracja_DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandler, limit As Date)
+Private Sub IIteracja_DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandler, limit As Date, limit_del As Date)
         i_mgo.sendKeys "<Clear>"
         i_mgo.sendKeys "ms9pop00 <Enter>"
         i_mgo.pMS9POP00.DS = "6"
@@ -142,7 +142,7 @@ Private Sub IIteracja_DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandle
         IIteracja_Qhold = i_mgo.pMS9POP00.QHD
         IIteracja_MISC = i_mgo.pMS9POP00.MISC
         IIteracja_StdPack = i_mgo.pMS9POP00.STD_PACK
-        IIteracja_SheetDef = "hourly " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " " & ActiveSheet.Name
+        IIteracja_SheetDef = "hourly " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
         
         Set pop = i_mgo.pMS9POP00
         txt = _
@@ -243,7 +243,7 @@ Private Property Get IIteracja_PlantName() As String
     IIteracja_PlantName = CStr(Cells(ir + 1, 3))
 End Property
 
-Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
+Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit As Date, limit_del As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator)
 
     ' rusztowanie powinno byc zbudowane na bazie rqms
     ' i dopiero na polozyc bedzie mozna PUSy i ASNy
@@ -361,7 +361,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     
     ' TRANS
     ' ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    tworzenie_tranzytow.towrzenie_tranzytow_2 sh, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
+    tworzenie_tranzytow.towrzenie_tranzytow_2 sh, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
     ' ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     

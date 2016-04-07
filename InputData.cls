@@ -24,10 +24,3 @@ Public plt_name As String
 Public comment1 As String
 Public comment2 As String
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub

@@ -17,14 +17,6 @@ Public Property Get sesja() As Object
     Set sesja = Sess0
 End Property
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
-
 Public Property Get infocode() As String
     infocode = Trim(Sess0.screen.getString(22, 2, 5))
 End Property

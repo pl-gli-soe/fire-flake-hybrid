@@ -74,10 +74,3 @@ Public Property Let DUNS(arg As String)
 End Property
 
 
-Private Sub Class_Initialize()
-
-End Sub
-
-Private Sub Class_Terminate()
-
-End Sub
