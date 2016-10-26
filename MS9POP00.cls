@@ -155,8 +155,8 @@ Public Property Get oneJOB() As String
     oneJOB = Trim(Sess0.screen.getString(12, 7, 11))
 End Property
 
-Public Property Get IP() As String
-    IP = Trim(Sess0.screen.getString(12, 27, 5))
+Public Property Get ip() As String
+    ip = Trim(Sess0.screen.getString(12, 27, 5))
 End Property
 
 Public Property Get COUNT() As String

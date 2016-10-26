@@ -27,12 +27,17 @@ Private scr_zk7pprul As ZK7PPRUL
 Private scr_zk7pprhr As ZK7PPRHR
 Private scr_zk7ppud0 As ZK7PPUD0
 
-
+Public Sub refresh()
+    
+    Set System = CreateObject("EXTRA.System")   ' Gets the system object
+    Set Sessions = System.Sessions
+    Set Sess0 = System.activeSession
+End Sub
 
 Private Sub Class_Initialize()
     Set System = CreateObject("EXTRA.System")   ' Gets the system object
     Set Sessions = System.Sessions
-    Set Sess0 = System.ActiveSession
+    Set Sess0 = System.activeSession
     
     Set scr_ms9pop00 = New MS9POP00
     scr_ms9pop00.sesja = Sess0
@@ -212,7 +217,7 @@ End Function
 Public Sub mgoInit()
     Set System = CreateObject("EXTRA.System")   ' Gets the system object
     Set Sessions = System.Sessions
-    Set Sess0 = System.ActiveSession
+    Set Sess0 = System.activeSession
     
     waitForMgo
 End Sub

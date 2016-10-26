@@ -151,7 +151,7 @@ Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As Status
         "O/S: " & pop.OS & Chr(10) & _
         "FMA FU: " & pop.a & Chr(10) & _
         "DK: " & pop.DK & Chr(10) & _
-        "IP: " & pop.IP & Chr(10) & _
+        "IP: " & pop.ip & Chr(10) & _
         "MODE: " & pop.MODE & Chr(10)
 
         
@@ -365,6 +365,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
         
         cmnt = ""
         For Each nyrtrans In not_yet_received_collection
+        
             If nyrtrans.mNotYetReceived = True Then
                 If nyrtrans.mOutOfScope = True Then
                     If (nyrtrans.mQty <> 0) Then

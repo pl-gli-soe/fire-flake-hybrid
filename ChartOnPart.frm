@@ -34,7 +34,7 @@ Private Sub ChangeScaleButton_Click()
         .Height = 250
     End With
     
-    tmp_chart.Chart.Refresh
+    tmp_chart.Chart.refresh
     fname = ThisWorkbook.Path & Application.PathSeparator & "temp.gif"
     tmp_chart.Chart.Export Filename:=fname, filtername:="GIF"
     ChartOnPart.ChartImage.Picture = LoadPicture(fname)

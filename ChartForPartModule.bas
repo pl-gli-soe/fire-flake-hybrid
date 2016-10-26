@@ -147,7 +147,7 @@ Public Sub chart_for_part(ictrl As IRibbonControl)
 
 
     
-    tmp_chart.Refresh
+    tmp_chart.refresh
     fname = ThisWorkbook.Path & Application.PathSeparator & "temp.gif"
     tmp_chart.Export Filename:=fname, filtername:="GIF"
     ChartOnPart.ChartImage.Picture = LoadPicture(fname)
