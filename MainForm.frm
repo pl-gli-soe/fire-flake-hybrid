@@ -54,6 +54,16 @@ Private Sub CommandButton1_Click()
     ' ff.create_tear_down New ItemHourly
     
     
+    ' new in 3.9z
+    If Me.CheckBoxIPASN.Value = True Then
+        ff.ip = True
+        Sheets("register").Range("IPasZERO") = 1
+    Else
+        ff.ip = False
+        Sheets("register").Range("IPasZERO") = 0
+    End If
+    
+    
     
     ff.create_tear_down New ItemWeekly
     

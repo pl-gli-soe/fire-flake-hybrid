@@ -59,10 +59,14 @@ Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer
     ' oczywiscie przyda sie tutaj przeszukiwanie binarne bedzie szybciuchniej
     compare_for_not_yet_received_and_delete_duplicates sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     
+    find_ip_sid_and_if_we_you_have_proper_check_set_on_zero not_yet_received_collection
+    
     ' wpasuj wszystko w dane w item_collection
     dopasuj_dane_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     
 End Sub
+
+
 
 Private Sub zaladuj_do_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
     ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
@@ -207,7 +211,47 @@ Private Sub compare_for_not_yet_received_and_delete_duplicates(ByRef sth As Stat
             End If
             
         Next i
+    ElseIf not_yet_received_collection.COUNT = 1 Then
+        
+        i = 1
+        Set t_o = not_yet_received_collection.item(i)
+        
+        ' dodatkowy warunek jesli mamy do czynienia tylko i wylacznie z jednym transportem
+        ' to nalezy sprawdzic czy przydkiem nie jest to nyr
+        If Not t_o.mOnPop And CDate(t_o.mDeliveryDate) < Date Then
+            t_o.mQty = 0
+            t_o.mNotYetReceived = False
+        End If
     End If
+End Sub
+
+
+
+Private Sub find_ip_sid_and_if_we_you_have_proper_check_set_on_zero(ByRef not_yet_received_collection As Collection)
+    
+        Dim it As ITransit
+        
+        'For i = 1 To not_yet_received_collection.COUNT
+        '      Set t_o = not_yet_received_collection.item(i)
+        '
+        '      MsgBox t_o.mName & " " & t_o.mPickupDate & " " & t_o.mPickupTime & " " & t_o.mQty & " " & t_o.mDeliveryTime
+        'Next i
+        
+        If not_yet_received_collection.COUNT > 0 Then
+            
+            For i = 1 To not_yet_received_collection.COUNT
+            
+                Set it = not_yet_received_collection.item(i)
+                
+                If it.mName Like "*IP*" Then
+                    If Sheets("register").Range("IPasZERO").Value = 1 Then
+                        it.mQty = 0
+                        
+                    End If
+                End If
+            Next i
+        End If
+
 End Sub
 
 Private Sub dopasuj_dane_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
@@ -499,6 +543,7 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
         ' ===================================================================
         
         Do
+            i_mgo.refresh
             For x = 0 To 7
                 
                 m_str = CStr(i_mgo.pMS9PO400.EDA(Int(x)))
@@ -611,10 +656,11 @@ Private Sub p_tworzenie_tranzytow_on_zk7ppum0(ByRef sth As StatusHandler, ByRef 
         licznik_f8 = 0
         
         Do
+            i_mgo.refresh
             For x = 0 To 11
             
             
-                Debug.Assert CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x))) <> "ZAS192067"
+                ' Debug.Assert CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x))) <> "ZAS192067"
                 ' Debug.Print CStr(i_mgo.pZK7PPUM0.PUS_NBR(Int(x)))
             
                 If i_mgo.pZK7PPUM0.plt(Int(x)) <> "" Then
@@ -825,7 +871,8 @@ End Function
 
 Private Sub bubble_sort(not_yet_received_collection As Collection, _
     Optional ByRef i_trans As ITransit, Optional ByRef left_trans As ITransit, Optional ByRef temp_trans As ITransit)
-
+    
+    ' Debug.Print not_yet_received_collection.COUNT
     
     For x = 1 To not_yet_received_collection.COUNT - 1
         Set left_trans = not_yet_received_collection.item(x)

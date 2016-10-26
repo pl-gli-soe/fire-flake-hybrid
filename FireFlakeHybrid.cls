@@ -42,6 +42,7 @@ Private instance_tokenizator As Tokenizator
 Private catch_err As CatchError
 Private date_limit As Date
 Private date_limit_delivery As Date
+Private ip_zero As Boolean
 Private first_item As IItem
 
 ' set, let dla pol - limit pickup & delivery
@@ -53,6 +54,20 @@ Public Property Let p_limit(arg As Date)
 
     date_limit = arg
 End Property
+
+
+Public Property Get ip() As Date
+    ip = ip_zero
+End Property
+
+
+Public Property Let ip(arg As Date)
+
+    ip_zero = arg
+End Property
+
+
+
 
 Public Property Let p_limit_delivery(arg As Date)
     date_limit_delivery = arg

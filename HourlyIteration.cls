@@ -155,7 +155,7 @@ Private Sub IIteracja_DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandle
         "O/S: " & pop.OS & Chr(10) & _
         "FMA FU: " & pop.a & Chr(10) & _
         "DK: " & pop.DK & Chr(10) & _
-        "IP: " & pop.IP & Chr(10) & _
+        "IP: " & pop.ip & Chr(10) & _
         "MODE: " & pop.MODE & Chr(10)
         
         instance_in_iteration_bank = CLng(pop.Bank)

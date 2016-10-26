@@ -144,7 +144,7 @@ Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As Status
         "O/S: " & pop.OS & Chr(10) & _
         "FMA FU: " & pop.a & Chr(10) & _
         "DK: " & pop.DK & Chr(10) & _
-        "IP: " & pop.IP & Chr(10) & _
+        "IP: " & pop.ip & Chr(10) & _
         "MODE: " & pop.MODE & Chr(10)
 
         
@@ -366,20 +366,22 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
         For Each nyrtrans In not_yet_received_collection
             If nyrtrans.mNotYetReceived = True Then
                 If nyrtrans.mOutOfScope = True Then
-                    If (nyrtrans.mQty <> 0) Then
-                        IIteracja_NotyetReceived.Value = IIteracja_NotyetReceived.Value + nyrtrans.mQty
-                        cmnt = cmnt & _
-                        "DeliveryDate: " & CStr(nyrtrans.mDeliveryDate) & Chr(10) & _
-                        "DeliveryTime: " & CStr(nyrtrans.mDeliveryTime) & Chr(10) & _
-                        "Name: " & CStr(nyrtrans.mName) & Chr(10) & _
-                        "PickupDate: " & CStr(nyrtrans.mPickupDate) & Chr(10) & _
-                        "Qty: " & CStr(nyrtrans.mQty) & Chr(10) & _
-                        "Route: " & CStr(nyrtrans.mRoute) & Chr(10) & _
-                        "TRLR: " & CStr(nyrtrans.mTRLR) & Chr(10) & _
-                        "ST: " & CStr(nyrtrans.mST) & Chr(10) & _
-                        "----------------------------------------" & Chr(10) & Chr(10)
-                        
-                        var_helper = var_helper + 1
+                    If nyrtrans.mOnPop = True Then
+                        If (nyrtrans.mQty <> 0) Then
+                            IIteracja_NotyetReceived.Value = IIteracja_NotyetReceived.Value + nyrtrans.mQty
+                            cmnt = cmnt & _
+                            "DeliveryDate: " & CStr(nyrtrans.mDeliveryDate) & Chr(10) & _
+                            "DeliveryTime: " & CStr(nyrtrans.mDeliveryTime) & Chr(10) & _
+                            "Name: " & CStr(nyrtrans.mName) & Chr(10) & _
+                            "PickupDate: " & CStr(nyrtrans.mPickupDate) & Chr(10) & _
+                            "Qty: " & CStr(nyrtrans.mQty) & Chr(10) & _
+                            "Route: " & CStr(nyrtrans.mRoute) & Chr(10) & _
+                            "TRLR: " & CStr(nyrtrans.mTRLR) & Chr(10) & _
+                            "ST: " & CStr(nyrtrans.mST) & Chr(10) & _
+                            "----------------------------------------" & Chr(10) & Chr(10)
+                            
+                            var_helper = var_helper + 1
+                        End If
                     End If
                 End If
             End If

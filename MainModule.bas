@@ -6,6 +6,12 @@ Public Sub run_ff(ictrl As IRibbonControl)
     MainForm.ComboBoxColors.AddItem CStr(Sheets("register").Range("KOLORY"))
     MainForm.ComboBoxColors.AddItem CStr(Sheets("register").Range("KOLORY").Offset(1, 0))
     MainForm.ComboBoxColors.Value = CStr(Sheets("register").Range("KOLORY"))
+    
+    
+    Sheets("register").Range("IPasZERO") = 0
+    MainForm.CheckBoxIPASN.Value = False
+    MainForm.CheckboxMiscFromDRqm.Value = False
+    
     MainForm.show
 End Sub
 
