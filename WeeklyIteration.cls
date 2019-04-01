@@ -105,8 +105,8 @@ Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As Status
         i_mgo.sendKeys "<Clear>"
         i_mgo.sendKeys "ms9pop00 <Enter>"
         i_mgo.pMS9POP00.DS = "6"
-        i_mgo.pMS9POP00.pn = IIteracja_Partnum
-        i_mgo.pMS9POP00.plt = IIteracja_PlantName
+        i_mgo.pMS9POP00.pn = Trim(CStr(IIteracja_Partnum))
+        i_mgo.pMS9POP00.plt = Trim(CStr(IIteracja_PlantName))
         i_mgo.sendKeys "<Enter>"
         
         Set catch_error = New CatchError
@@ -286,6 +286,9 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     
         ' nop poniewaz ta metoda ponizej pracuje dobrze tylko dla daily
         ' tworzenie_manualych_rqmsow item, limit, hourly_extension_day, sh, instance_tokenizator, tempdate
+        
+        ' mimo to sprobujemy dodac na pale implementacje
+        tworzenie_manualych_rqmsow_dla_weekly item, limit, hourly_extension_day, sh, instance_tokenizator, tempdate
     
     End If
     
@@ -318,6 +321,17 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     
     ' tworzenie_kolekcji_tranzytow i_mgo As MGO, item As IItem, limit As Date, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
     tworzenie_tranzytow.towrzenie_tranzytow_2 sh, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed
+    
+    
+    
+    ' TEST item_collection ' OK
+    ' ======================================================================================================
+    '    Debug.Print item_collection.COUNT
+    '    For x = 1 To item_collection.COUNT
+    '        Debug.Print item_collection.item(x).mDate
+    '    Next x
+    ' ======================================================================================================
+    
     
     sh.progress_increase
     ' ===================================================================================
@@ -712,8 +726,16 @@ Private Sub tworzenie_rqmsow(i_mgo As MGO, item As IItem, limit As Date, Optiona
                     item.mReq = temp_rqm_from_daily
                 End If
                 
+                ' ta implementacja jest kiepsko napisana
+                ' curr_cw = Int(uchwyt_stra_WEEK_x) + Evaluate(swn) - 1
                 
-                curr_cw = Int(uchwyt_stra_WEEK_x) + Evaluate(swn) - 1
+                curr_cw = foo_stworz_str_na_podstawie(Int(Evaluate(swn)), Int(uchwyt_stra_WEEK_x), i_mgo)
+                
+                If curr_cw = -1 Then
+                    MsgBox "cos poszlo nie tak z proba przypisania aktualnego cw!"
+                    End
+                End If
+                
                 item.mDate = i_mgo.pZK7PWRQM.sunday_from_cw(Int(curr_cw))
                 
                 ' procedura zajmujaca sie wypelnianiem kolekcji pustymi itemami,
@@ -755,7 +777,29 @@ Private Sub tworzenie_rqmsow(i_mgo As MGO, item As IItem, limit As Date, Optiona
     Loop While True
 End Sub
 
-Private Sub tworzenie_manualych_rqmsow(item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator, Optional tempdate As Date)
+Private Function foo_stworz_str_na_podstawie(current_cw As Integer, ofst As Integer, i_mgo As MGO) As Integer
+    
+    foo_stworz_str_na_podstawie = -1
+    
+    ' ale prawdziwy ofst trzeba zmniejszyc o jeden
+    ' bo liczymy od WEEK 1, anie od od WEEK 0
+    ofst = ofst - 1
+    
+    If ofst > 0 Then
+        Dim poniedzialek As Date
+        poniedzialek = CDate(i_mgo.pZK7PWRQM.monday_from_cw(current_cw))
+        
+        foo_stworz_str_na_podstawie = Application.WorksheetFunction.IsoWeekNum(CDbl(CDate(poniedzialek + ofst * 7)))
+    Else
+        foo_stworz_str_na_podstawie = current_cw
+    End If
+    
+    
+    
+    
+End Function
+
+Private Sub tworzenie_manualych_rqmsow_dla_weekly(item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator, Optional tempdate As Date)
     If instance_tokenizator.getIteration < -1 Then
         If Not instance_tokenizator.getCustomRqmTable Is Nothing Then
             instance_tokenizator.setIteration = instance_tokenizator.getCustomRqmTable.COUNT
@@ -770,7 +814,7 @@ Private Sub tworzenie_manualych_rqmsow(item As IItem, limit As Date, Optional ho
             fill_collection_with_manual_data item, limit, hourly_extension_day, sh, instance_tokenizator, tempdate
         ElseIf Not instance_tokenizator.getCustomRqmTable Is Nothing Then
             
-            fill_collection_with_manual_data item, limit, hourly_extension_day, sh, instance_tokenizator, tempdate
+            fill_collection_with_manual_data item, limit, hourly_extension_day, sh, instance_tokenizator, tempdate, instance_tokenizator.getCustomRqmTable
         End If
         
         ' tabele
@@ -778,9 +822,11 @@ Private Sub tworzenie_manualych_rqmsow(item As IItem, limit As Date, Optional ho
     End If
 End Sub
 
-Private Sub fill_collection_with_manual_data(item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator, Optional tempdate As Date)
+Private Sub fill_collection_with_manual_data(item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator, Optional tempdate As Date, Optional dataFromRange As Range)
 
     Dim empty_item As IItem
+    
+    tempdate = getNextSundayForWeeklyManualRqm(tempdate)
     
     For x = 1 To instance_tokenizator.getIteration
         
@@ -805,7 +851,7 @@ Private Sub fill_collection_with_manual_data(item As IItem, limit As Date, Optio
             If x > instance_tokenizator.getCustomRqmTable.COUNT Then
                 item.mReq = 0
             Else
-                item.mReq = instance_tokenizator.getCustomRqmTable.item(x, 1)
+                item.mReq = instance_tokenizator.getCustomRqmTable.item(x)
             End If
         End If
         
@@ -816,9 +862,24 @@ Private Sub fill_collection_with_manual_data(item As IItem, limit As Date, Optio
         'End If
         
         item_collection.Add item
-        tempdate = tempdate + 1
+        tempdate = tempdate + 7
     Next x
 End Sub
+
+
+Private Function getNextSundayForWeeklyManualRqm(d As Date) As Date
+
+    jakiDzien = Weekday(d)
+    
+    getNextSundayForWeeklyManualRqm = CDate(d - jakiDzien + 1 + 7)
+End Function
+
+Private Function getMondayForWeeklyManualRqm(d As Date) As Date
+
+    jakiDzien = Weekday(d)
+    
+    getMondayForWeeklyManualRqm = CDate(d - jakiDzien + 2)
+End Function
 
 
 Private Sub tworzenie_c_rqmsow(i_mgo As MGO, item As IItem, limit As Date, Optional hourly_extension_day As Date, Optional ByRef sh As StatusHandler, Optional ByRef instance_tokenizator As Tokenizator, Optional tempdate As Date)
