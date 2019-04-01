@@ -33,7 +33,7 @@ Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer
     Set not_yet_received_collection = Nothing
     Set not_yet_received_collection = New Collection
     
-    check_past = Int(Sheets("register").Range("History"))
+    check_past = Int(ThisWorkbook.Sheets("register").Range("History"))
     
     
     ' pierwsza rzecz otworzyc zk7ppus0 i zobaczyc czy cos mamy
@@ -61,6 +61,12 @@ Public Sub towrzenie_tranzytow_2(ByRef sth As StatusHandler, ByRef ir As Integer
     
     find_ip_sid_and_if_we_you_have_proper_check_set_on_zero not_yet_received_collection
     
+    
+    
+    For Each el In not_yet_received_collection
+        Debug.Print "dd: " & el.mDeliveryDate & " nyr: " & el.mNotYetReceived & ", not in scope: " & el.mOutOfScope
+    Next el
+    
     ' wpasuj wszystko w dane w item_collection
     dopasuj_dane_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
     
@@ -76,10 +82,20 @@ Private Sub zaladuj_do_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal I
     If CStr(i_mgo.getString(1, 2, 8)) = "ZK7PPUM0" Then
         part_posiada_pusy = True
         p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+        
+
     Else
         part_posiada_pusy = False
     End If
+    
+    If CStr(ThisWorkbook.Sheets("register").Range("PROSL").Value) = "1" Then
+        p_tworzenie_tranzytow_on_zk7prosl sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+    End If
+    
+    
     p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+    
+    
     
 
 End Sub
@@ -146,9 +162,11 @@ Private Sub compare_for_not_yet_received_and_delete_duplicates(ByRef sth As Stat
                         ' ktory zeruje wszystko na wariata
                         ' na szczescie iteracja jest tak napsiana ze nigdy dwa razy to samo porownanie nie nastapi
                         ' zatem moge sobie pozwolic na taka ekstrawagancje
-                        If t_o.mOnPop Then
+                        
+                        
+                        If t_o.mOnPop And Not t_o.mOnProsl Then
                             t_o.mQty = 0
-                        ElseIf t_i.mOnPop Then
+                        ElseIf t_i.mOnPop And Not t_o.mOnProsl Then
                             t_i.mQty = 0
                         End If
                         
@@ -194,18 +212,20 @@ Private Sub compare_for_not_yet_received_and_delete_duplicates(ByRef sth As Stat
             ' new 2014-03-17
             ' sprawdzam scope dla podwojonych z MS9PO400 - property on POP
             ' dodatkowo od razu ignorujemy "puste"
-            If t_o.mQty > 0 Then
-                If t_o.mOnPop Then
-                
-                    ' troche restrykcyjne ale jesli stanie sie to skasuje takie male ryzyko zawodowe
-                    ' Debug.Print t_o.mName
-                    If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) > Now Then
-                        t_o.mQty = 0
-                    End If
-                
-                Else ' not on pop
-                    If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) <= Now Then
-                        t_o.mQty = 0
+            If Not t_o.mOnProsl Then
+                If t_o.mQty > 0 Then
+                    If t_o.mOnPop Then
+                    
+                        ' troche restrykcyjne ale jesli stanie sie to skasuje takie male ryzyko zawodowe
+                        ' Debug.Print t_o.mName
+                        If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) > Now Then
+                            t_o.mQty = 0
+                        End If
+                    
+                    Else ' not on pop
+                        If CDate(CStr(t_o.mPickupDate) & " " & CStr(t_o.mPickupTime)) <= Now Then
+                            t_o.mQty = 0
+                        End If
                     End If
                 End If
             End If
@@ -244,7 +264,7 @@ Private Sub find_ip_sid_and_if_we_you_have_proper_check_set_on_zero(ByRef not_ye
                 Set it = not_yet_received_collection.item(i)
                 
                 If it.mName Like "*IP*" Then
-                    If Sheets("register").Range("IPasZERO").Value = 1 Then
+                    If ThisWorkbook.Sheets("register").Range("IPasZERO").Value = 1 Then
                         it.mQty = 0
                         
                     End If
@@ -292,8 +312,14 @@ Private Sub dopasuj_dane_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal
                         Set ii = Nothing
                         Set ii = item_collection.item(srodek)
                         
-                        If CDate(Format(ii.mDate, "yyyy-mm-dd")) >= CDate(Format(temp_trans.mDeliveryDate, "yyyy-mm-dd")) And _
-                        CDate((CDate(Format(ii.mDate, "yyyy-mm-dd")) - 6) <= CDate(Format(temp_trans.mDeliveryDate, "yyyy-mm-dd"))) Then
+                        
+                        ii_mDate = CDate(Format(ii.mDate, "yyyy-mm-dd"))
+                        tmp_trans_del_date = CDate(Format(temp_trans.mDeliveryDate, "yyyy-mm-dd"))
+                        
+                        Debug.Print "ii mDate: " & ii_mDate
+                        Debug.Print "tmp trans del date: " & tmp_trans_del_date
+                        
+                        If ii_mDate >= tmp_trans_del_date And CDate(ii_mDate - 6) <= tmp_trans_del_date Then
                             
                             ' narazie na samej dacie teraz jeszcze godzina!
                             ' poniewaz korzystam z algorytmu binarnego nie moge tak po prostu
@@ -303,9 +329,9 @@ Private Sub dopasuj_dane_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal
                             
                             
                         Else
-                            If CDate(Format(ii.mDate, "yyyy-mm-dd")) < CDate(Format(temp_trans.mDeliveryDate, "yyyy-mm-dd")) Then
+                            If ii_mDate < tmp_trans_del_date Then
                                 lewy = srodek + 1
-                            ElseIf CDate(Format(ii.mDate, "yyyy-mm-dd")) > CDate(Format(temp_trans.mDeliveryDate, "yyyy-mm-dd")) Then
+                            ElseIf ii_mDate > tmp_trans_del_date Then
                                 prawy = srodek - 1
                             End If
                             
@@ -434,11 +460,11 @@ Private Sub dopasuj_dane_(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal
 End Sub
 
 
-Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
-    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
-    ByRef txt_time As String, ByRef item_collection As Collection, _
-    ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
-    
+'Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
+'    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
+'    ByRef txt_time As String, ByRef item_collection As Collection, _
+'    ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
+'
     ' 13 progress increasow
     
     ' procedura ta ma byc jednolinijkowa podmiana pod kawa³ kodu pracujacy pod ms9po400, zk7ppus0, zk7ppum0, ms9ph100
@@ -453,39 +479,142 @@ Public Sub tworzenie_tranzytow(ByRef sth As StatusHandler, ByRef ir As Integer, 
     '   i podzielenia na niezale¿ne procedury które o wiele latwiej jest koordynowac oraz kleic i update'owac :)
     '   ==============================================================================================================================
     
-    Set not_yet_received_collection = Nothing
-    Set not_yet_received_collection = New Collection
+'    Set not_yet_received_collection = Nothing
+'    Set not_yet_received_collection = New Collection
+'
+'    check_past = Int(ThisWorkbook.Sheets("register").Range("History"))
+'
+'
+'    ' pierwsza rzecz otworzyc zk7ppus0 i zobaczyc czy cos mamy
+'    i_mgo.sendKeys "<Clear>"
+'    i_mgo.sendKeys "zk7ppus0 <Enter>"
+'    i_mgo.pZK7PPUS0.plt = IIteracja_PlantName
+'    i_mgo.pZK7PPUS0.pn = IIteracja_Partnum
+'    i_mgo.pZK7PPUS0.DELIVERY_DATE_FROM = i_mgo.convertToMgoLongDate(Now - Int(check_past))
+'    i_mgo.sendKeys "<Enter>"
+'    i_mgo.waitForMgo
+'    i_mgo.sendKeys "<pf12>"
+'
+'    sth.progress_increase
+'
+'    If CStr(i_mgo.getString(22, 2, 5)) = "R6285" Then
+'        ' ASNs
+'        p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+'        sth.progress_increase
+'        ' jesli przeszlismy do strony z danymi znaczy ze mozna kontynuowac algorytm
+'    ElseIf CStr(i_mgo.getString(1, 2, 8)) = "ZK7PPUM0" Then
+'        ' PUSes
+'
+'        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+'        p_towrzenie_tranzytow_on_ms9ph100 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
+'        sth.progress_increase
+'    End If
+'
+'    dopasuj_dane_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod'
+'
+'End Sub
+
+Private Sub p_tworzenie_tranzytow_on_zk7prosl(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
+    ByVal IIteracja_Partnum As String, ByRef i_mgo As MGO, ByRef item As IItem, ByRef limit As Date, ByRef limit_del As Date, _
+    ByRef txt_time As String, ByRef item_collection As Collection, _
+    ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
-    check_past = Int(Sheets("register").Range("History"))
     
-    
-    ' pierwsza rzecz otworzyc zk7ppus0 i zobaczyc czy cos mamy
-    i_mgo.sendKeys "<Clear>"
-    i_mgo.sendKeys "zk7ppus0 <Enter>"
-    i_mgo.pZK7PPUS0.plt = IIteracja_PlantName
-    i_mgo.pZK7PPUS0.pn = IIteracja_Partnum
-    i_mgo.pZK7PPUS0.DELIVERY_DATE_FROM = i_mgo.convertToMgoLongDate(Now - Int(check_past))
-    i_mgo.sendKeys "<Enter>"
-    i_mgo.waitForMgo
-    i_mgo.sendKeys "<pf12>"
-    
-    sth.progress_increase
-    
-    If CStr(i_mgo.getString(22, 2, 5)) = "R6285" Then
-        ' ASNs
-        p_tworzenie_tranzytow_on_ms9po400 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
-        sth.progress_increase
-        ' jesli przeszlismy do strony z danymi znaczy ze mozna kontynuowac algorytm
-    ElseIf CStr(i_mgo.getString(1, 2, 8)) = "ZK7PPUM0" Then
-        ' PUSes
+        Dim temp_item As IItem
+        Dim temp_trans As ITransit
         
-        p_tworzenie_tranzytow_on_zk7ppum0 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
-        p_towrzenie_tranzytow_on_ms9ph100 sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, limit_del, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
-        sth.progress_increase
-    End If
-    
-    dopasuj_dane_ sth, ir, IIteracja_PlantName, IIteracja_Partnum, i_mgo, item, limit, txt_time, item_collection, not_yet_received_collection, is_f8_pressed, poczatek_dnia_prod
-    
+        If item_collection.COUNT > 0 Then
+        
+            Set temp_item = Nothing
+            Set temp_item = item_collection.item(1)
+            
+            If Cells(1, 1) Like "daily*" Then
+                first_date = CDate(temp_item.mDate)
+            ElseIf Cells(1, 1) Like "weekly*" Then
+                first_date = CDate(Format(Now, "yyyy-mm-dd"))
+            End If
+            
+            Set temp_item = Nothing
+            Set temp_item = item_collection.item(item_collection.COUNT)
+            last_date = CDate(temp_item.mDate)
+        Else
+            first_date = CDate(Format(Now, "yyyy-mm-dd"))
+            last_date = CDate(Format(Now, "yyyy-mm-dd"))
+        End If
+        
+        
+        
+        ' open prosl
+        i_mgo.sendKeys "<Clear>"
+        i_mgo.sendKeys "zk7prosl <Enter>"
+        i_mgo.pZK7PROSL.plt = IIteracja_PlantName
+        i_mgo.pZK7PROSL.pn = "        "
+        i_mgo.pZK7PROSL.pn = IIteracja_Partnum
+        ' i_mgo.pZK7PROSL.KANBAN = ""
+        i_mgo.sendKeys "<Enter>"
+        
+        i_mgo.refresh
+        
+        For x = 0 To 11
+            If Trim(i_mgo.pZK7PROSL.QTY(Int(x))) <> "" Then
+            
+                ' i teraz bardzo prosty warunek - zaciagamy tylko prognozy ktore jako pusy jeszcze nie maja nazwy
+                ' tylko dwie pierwsze litery plantu
+                If Len(Trim(i_mgo.pZK7PROSL.PUS_NUMBER(Int(x)))) = 2 Then
+
+                    str_d = CStr(i_mgo.pZK7PROSL.DELIVERY_DATE(Int(x)))
+                    If CDate(i_mgo.convertToDateFromZK7PROSLDate(CStr(str_d))) <= CDate(Format(limit_del, "yyyy-mm-dd")) Then
+                        If CDate(i_mgo.convertToDateFromZK7PROSLDate(CStr(i_mgo.pZK7PROSL.SHIP_DATE(Int(x))))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
+                    
+                            txt_time = CStr(i_mgo.pZK7PROSL.DELIVERY_TIME(Int(x)))
+                            pu_time = CStr(i_mgo.pZK7PROSL.SHIP_TIME(Int(x)))
+                            
+                            
+                            
+                            Set temp_trans = Nothing
+                            
+                            
+                            ' PUS object implements ITransit
+                            Set temp_trans = New pus
+                            
+                            
+                            
+                            On Error Resume Next
+                            temp_trans.mDeliveryDate = i_mgo.convertToDateFromZK7PROSLDate(CStr(i_mgo.pZK7PROSL.DELIVERY_DATE(Int(x))))
+                            On Error Resume Next
+                            temp_trans.mDeliveryTime = CDate(Format(CStr(txt_time), "hh:mm"))
+                            temp_trans.mName = CStr(i_mgo.pZK7PROSL.PUS_NUMBER(Int(x)))
+                            temp_trans.mPickupDate = CDate(i_mgo.convertToDateFromZK7PROSLDate(CStr(i_mgo.pZK7PROSL.SHIP_DATE(Int(x)))))
+                            
+                            
+                            
+                            'temp_trans.mPickupTime = CDate(Format(CStr(txt_time), "00:00"))
+                            temp_trans.mPickupTime = CDate(Format(CStr(pu_time), "hh:mm"))
+                            temp_trans.mQty = i_mgo.pZK7PROSL.QTY(Int(x))
+                            
+                            ' domyslnie true na not yet received
+                            ' domyslnie false na out of the scope
+                            
+                            temp_trans.mOnPop = False
+                            temp_trans.mOnProsl = True
+                            
+                            Dim tmp_lng_date As Date
+                            tmp_lng_date = CDate(CStr(temp_trans.mDeliveryDate) & " " & CStr(temp_trans.mDeliveryTime))
+                            
+                            If (first_date > tmp_lng_date) Or (last_date < tmp_lng_date) Then
+                                temp_trans.mOutOfScope = True
+                            End If
+                            
+                            If last_date >= tmp_lng_date Then
+                                not_yet_received_collection.Add temp_trans
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        Next x
+            
+
 End Sub
 
 Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef ir As Integer, ByVal IIteracja_PlantName As String, _
@@ -538,9 +667,16 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
         i_mgo.sendKeys "<Enter>"
         
         
+        
+        
+        
         sth.progress_increase
         ' tutaj petla zapelniajaca nyrt
         ' ===================================================================
+        
+        If UCase(i_mgo.actualScreen) <> UCase("ms9po400") Then
+            Exit Sub
+        End If
         
         Do
             i_mgo.refresh
@@ -550,47 +686,50 @@ Private Sub p_tworzenie_tranzytow_on_ms9po400(ByRef sth As StatusHandler, ByRef 
                 If m_str <> "______" Then
                 
                     If CDate(i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.EDA(Int(x)))) <= CDate(Format(limit_del, "yyyy-mm-dd")) Then
-                    If CDate(i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.SDATE(Int(x)))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
-                
-                        txt_time = Left(i_mgo.pMS9PO400.ETA(Int(x)), 2) & ":" & Right(i_mgo.pMS9PO400.ETA(Int(x)), 2)
-                        If (txt_time = "__:__") Or (txt_time = "24:00") Then
-                            txt_time = "00:00"
+                        If CDate(i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.SDATE(Int(x)))) <= CDate(Format(limit, "yyyy-mm-dd")) Then
+                    
+                            txt_time = Left(i_mgo.pMS9PO400.ETA(Int(x)), 2) & ":" & Right(i_mgo.pMS9PO400.ETA(Int(x)), 2)
+                            If (txt_time = "__:__") Or (txt_time = "24:00") Then
+                                txt_time = "00:00"
+                            End If
+                            
+                            Set temp_trans = Nothing
+                            Set temp_trans = New ASN
+                            On Error Resume Next
+                            temp_trans.mDeliveryDate = i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.EDA(Int(x)))
+                            On Error Resume Next
+                            temp_trans.mDeliveryTime = CDate(Format(txt_time, "hh:mm"))
+                            temp_trans.mNotYetReceived = True
+                            temp_trans.mName = i_mgo.pMS9PO400.SID(Int(x))
+                            temp_trans.mTRLR = i_mgo.pMS9PO400.TRLR(Int(x))
+                            temp_trans.mST = i_mgo.pMS9PO400.st(Int(x))
+                            temp_trans.mPickupDate = i_mgo.convertToDateFromMS9PO400Date(CStr(i_mgo.pMS9PO400.SDATE(Int(x))))
+                            temp_trans.mQty = CLng(i_mgo.pMS9PO400.QTY(Int(x)))
+                            temp_trans.mRoute = i_mgo.pMS9PO400.route(Int(x))
+                            
+                            temp_trans.mOnPop = True
+                            
+                            Dim tmp_lng_date As Date
+                            tmp_lng_date = CDate(CStr(temp_trans.mDeliveryDate) & " " & CStr(temp_trans.mDeliveryTime))
+                            
+                            If (first_date > tmp_lng_date) Or (last_date < tmp_lng_date) Then
+                                temp_trans.mOutOfScope = True
+                            End If
+                            
+                            If last_date >= tmp_lng_date Then
+                                not_yet_received_collection.Add temp_trans
+                            End If
+                            
                         End If
-                        
-                        Set temp_trans = Nothing
-                        Set temp_trans = New ASN
-                        On Error Resume Next
-                        temp_trans.mDeliveryDate = i_mgo.convertToDateFromMS9PO400Date(i_mgo.pMS9PO400.EDA(Int(x)))
-                        On Error Resume Next
-                        temp_trans.mDeliveryTime = CDate(Format(txt_time, "hh:mm"))
-                        temp_trans.mNotYetReceived = True
-                        temp_trans.mName = i_mgo.pMS9PO400.SID(Int(x))
-                        temp_trans.mTRLR = i_mgo.pMS9PO400.TRLR(Int(x))
-                        temp_trans.mST = i_mgo.pMS9PO400.st(Int(x))
-                        temp_trans.mPickupDate = i_mgo.convertToDateFromMS9PO400Date(CStr(i_mgo.pMS9PO400.SDATE(Int(x))))
-                        temp_trans.mQty = CLng(i_mgo.pMS9PO400.Qty(Int(x)))
-                        temp_trans.mRoute = i_mgo.pMS9PO400.route(Int(x))
-                        
-                        temp_trans.mOnPop = True
-                        
-                        Dim tmp_lng_date As Date
-                        tmp_lng_date = CDate(CStr(temp_trans.mDeliveryDate) & " " & CStr(temp_trans.mDeliveryTime))
-                        
-                        If (first_date > tmp_lng_date) Or (last_date < tmp_lng_date) Then
-                            temp_trans.mOutOfScope = True
-                        End If
-                        
-                        If last_date >= tmp_lng_date Then
-                            not_yet_received_collection.Add temp_trans
-                        End If
-                        
-                    End If
                     End If
                 End If
             Next x
             
-            If (CStr(i_mgo.getString(22, 2, 5)) = "I5487") Or (CStr(i_mgo.getString(22, 2, 5)) = "I6155") Or (CStr(i_mgo.getString(22, 2, 5)) = "I6293") Then
-                Exit Do
+            If (CStr(i_mgo.getString(22, 2, 5)) = "I5487") Or _
+                (CStr(i_mgo.getString(22, 2, 5)) = "I6155") Or _
+                (CStr(i_mgo.getString(22, 2, 5)) = "I4027") Or _
+                (CStr(i_mgo.getString(22, 2, 5)) = "I6293") Then
+                    Exit Do
             End If
             
             i_mgo.sendKeys "<pf8>"
@@ -609,7 +748,7 @@ Private Sub p_tworzenie_tranzytow_on_zk7ppum0(ByRef sth As StatusHandler, ByRef 
     ByRef txt_time As String, ByRef item_collection As Collection, _
     ByRef not_yet_received_collection As Collection, ByRef is_f8_pressed As Boolean, Optional poczatek_dnia_prod As Date)
     
-        check_past = Int(Sheets("register").Range("History"))
+        check_past = Int(ThisWorkbook.Sheets("register").Range("History"))
         
         
         ' przygotowanie warunków brzegowych dla obliczeñ
@@ -827,8 +966,8 @@ Private Sub p_towrzenie_tranzytow_on_ms9ph100(ByRef sth As StatusHandler, ByRef 
             Do
                 For x = 0 To 9
                 
-                    If CStr(i_mgo.pMS9PH100.Qty(Int(x))) <> "" Then
-                        If Int(i_mgo.pMS9PH100.Qty(Int(x))) <> 0 Then
+                    If CStr(i_mgo.pMS9PH100.QTY(Int(x))) <> "" Then
+                        If Int(i_mgo.pMS9PH100.QTY(Int(x))) <> 0 Then
                             For y = 1 To not_yet_received_collection.COUNT
                             
                                 Set temp_trans = Nothing
