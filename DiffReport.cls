@@ -180,7 +180,7 @@ Private Sub preprare_items(ByRef r As Range, n As String, typ As E_REPORT_TYPE)
                     inc_delivery_appears = inc_delivery_appears + 1
                     
                     If inc_delivery_appears = t Then
-                        diff_item.delivery_date = CDate(Right(str_arr(x), 10))
+                        diff_item.DELIVERY_DATE = CDate(Right(str_arr(x), 10))
                         diff_item.pickup_date = CDate(Right(str_arr(x + 3), 10))
                         ' diff_item.differenceQty = r.Value
                         ' diff_item.getExactValue = r.Value
@@ -203,7 +203,7 @@ Private Sub preprare_items(ByRef r As Range, n As String, typ As E_REPORT_TYPE)
                             diff_item.fst_runout = Cells(r.row, 5)
                         End If
                         
-                        diff_item.Qty = Right(str_arr(x + 4), Len(str_arr(x + 4)) - 4)
+                        diff_item.QTY = Right(str_arr(x + 4), Len(str_arr(x + 4)) - 4)
                         diff_item.route = Right(str_arr(x + 5), Len(str_arr(x + 5)) - 7)
                         ' trlr
                         diff_item.TRLR = Right(str_arr(x + 6), Len(str_arr(x + 6)) - 6)
@@ -236,10 +236,10 @@ Private Sub preprare_items(ByRef r As Range, n As String, typ As E_REPORT_TYPE)
         ' oinaczej wylada na kazdym raporcie
         
         If typ = DAILY Then
-            diff_item.delivery_date = CDate(Left(Cells(4, r.Column - 1), 10))
+            diff_item.DELIVERY_DATE = CDate(Left(Cells(4, r.Column - 1), 10))
         ElseIf typ = HOURLY Then
             ' diff_item.delivery_date = CDate(Now)
-            diff_item.delivery_date = CDate(r.Offset(-3, 0))
+            diff_item.DELIVERY_DATE = CDate(r.Offset(-3, 0))
         ElseIf typ = WEEKLY Then
             ' komentarze ponizej pokazuja jak dolny kod mozna zwinac / rozwinac
             ' Set komorka = Cells(4, r.Column - 1)
@@ -247,7 +247,7 @@ Private Sub preprare_items(ByRef r As Range, n As String, typ As E_REPORT_TYPE)
             ' cmnt_txt = CStr(komorka.Comment.Text)
             ' pierwsza_data = Left(cmnt_txt, 10)
             ' diff_item.delivery_date = CDate(Left(cmnt_txt, 10))
-            diff_item.delivery_date = CDate(Left(CStr(Cells(4, r.Column - 1).Comment.Text), 10))
+            diff_item.DELIVERY_DATE = CDate(Left(CStr(Cells(4, r.Column - 1).Comment.Text), 10))
         End If
         
         
@@ -283,7 +283,7 @@ Private Sub preprare_items(ByRef r As Range, n As String, typ As E_REPORT_TYPE)
         diff_item.sum_of_qty_in_parent_cell = r.Value
         diff_item.sum_of_regular_transit = suma_real_tranzytow
         diff_item.set_exact_value
-        diff_item.Qty = diff_item.manualAdjustment
+        diff_item.QTY = diff_item.manualAdjustment
         
         kolekcja_manualnych_dopasowan.Add diff_item
         
@@ -369,7 +369,7 @@ Public Sub create_diff_report()
                 toggle color_toggle
                 If CStr(r.Offset(-1, 0)) = diff_item.plt Then
                     If CStr(r.Offset(-1, 1)) = diff_item.pn Then
-                        If CStr(r.Offset(-1, 3) = CStr(Format(diff_item.delivery_date, "yyyy-mm-dd"))) Then
+                        If CStr(r.Offset(-1, 3) = CStr(Format(diff_item.DELIVERY_DATE, "yyyy-mm-dd"))) Then
                             toggle color_toggle
                         End If
                     End If
@@ -378,7 +378,7 @@ Public Sub create_diff_report()
                 r = diff_item.plt
                 r.Offset(0, 1) = diff_item.pn
                 r.Offset(0, 2) = diff_item.Name
-                r.Offset(0, 3) = diff_item.delivery_date
+                r.Offset(0, 3) = diff_item.DELIVERY_DATE
                 If diff_item.regular Then
                     r.Offset(0, 4) = diff_item.pickup_date
                 ElseIf Not diff_item.regular Then
@@ -386,7 +386,7 @@ Public Sub create_diff_report()
                     r.Offset(0, 4) = "yyyy-mm-dd"
                     r.Offset(0, 4).Font.Bold = True
                 End If
-                r.Offset(0, 5) = diff_item.Qty
+                r.Offset(0, 5) = diff_item.QTY
                 r.Offset(0, 6) = diff_item.sum_of_qty_in_parent_cell
                 r.Offset(0, 7) = diff_item.manualAdjustment
                 r.Offset(0, 8) = diff_item.istransit

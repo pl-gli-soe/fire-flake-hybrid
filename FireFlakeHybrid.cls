@@ -43,6 +43,7 @@ Private catch_err As CatchError
 Private date_limit As Date
 Private date_limit_delivery As Date
 Private ip_zero As Boolean
+Private get_data_from_prosl As Boolean
 Private first_item As IItem
 
 ' set, let dla pol - limit pickup & delivery
@@ -64,6 +65,16 @@ End Property
 Public Property Let ip(arg As Date)
 
     ip_zero = arg
+End Property
+
+Public Property Get prosl() As Date
+    prosl = get_data_from_prosl
+End Property
+
+
+Public Property Let prosl(arg As Date)
+
+    get_data_from_prosl = arg
 End Property
 
 
@@ -416,7 +427,7 @@ Public Sub create_tear_down(item As IItem)
     instance_layout.GenerujReszteRusztownia
     Sheets("register").Range("scopeObliczen") = "all"
     przelicz_parametry_arkusza ActiveSheet, ActiveCell
-    przelicz_arkusz ActiveSheet, ActiveCell, True
+    ' przelicz_arkusz ActiveSheet, ActiveCell, True
     Sheets("register").Range("scopeObliczen") = Sheets("register").Range("scopeObliczenDefault")
     DoEvents
     
