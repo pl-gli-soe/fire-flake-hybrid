@@ -19,15 +19,15 @@ Private Sub SubmitMakeListButton_Click()
     MakeListStatusForm.show vbModeless
     
     
-    Sheets("register").Range("makelistregion").Value = Left(CStr(MakeListForm.ComboBox1.Value), 3)
+    ThisWorkbook.Sheets("register").Range("makelistregion").Value = Left(CStr(MakeListForm.ComboBox1.Value), 3)
     
     Application.EnableEvents = False
     
-    If Sheets("input").FilterMode = True Then
-        Sheets("input").ShowAllData
+    If ThisWorkbook.Sheets("input").FilterMode = True Then
+        ThisWorkbook.Sheets("input").ShowAllData
     End If
     
-    Sheets("input").Range("a2:k1048576").Clear
+    inner_clearlist
     
     Dim arr() As String
     Dim plt_arr() As String
@@ -40,7 +40,7 @@ Private Sub SubmitMakeListButton_Click()
     Set pop = m.pMS9POP00
     
     
-    Set start = Sheets("input").Range("a2")
+    Set start = ThisWorkbook.Sheets("input").Range("a2")
     arr = Split(MakeListForm.TextBoxFU, " ")
     plt_arr = Split(MakeListForm.TextBoxPLT, " ")
     
@@ -76,7 +76,7 @@ Private Sub SubmitMakeListButton_Click()
     
     Dim rng As Range
     Dim tmp As Range
-    Set rng = Range("a2")
+    Set rng = ThisWorkbook.ActiveSheet.Range("a2")
     
     Do
         If Trim(rng) = "null" Then
@@ -93,6 +93,42 @@ Private Sub SubmitMakeListButton_Click()
     
     
     Application.EnableEvents = True
+    
+    'update - Paulina 28-07-2017
+    MsgBox "Check Results - Make List Completed!"
+End Sub
+
+Private Sub TextBoxDOH1_Change()
+    If Len(Me.TextBoxDOH1.Text) > 3 Then
+        MsgBox "Only 3 digits max can be provided in this box!"
+        Me.TextBoxDOH1.Text = Left(Me.TextBoxDOH1.Text, 3)
+    End If
+End Sub
+
+Private Sub TextBoxDOH2_Change()
+    If Len(Me.TextBoxDOH2.Text) > 3 Then
+        MsgBox "Only 3 digits max can be provided in this box!"
+        Me.TextBoxDOH2.Text = Left(Me.TextBoxDOH2.Text, 3)
+    End If
+End Sub
+
+Private Sub TextBoxDUNS_Change()
+    If Len(Me.TextBoxDUNS.Text) > 9 Then
+        MsgBox "DUNS requires 9 digits!"
+        Me.TextBoxDUNS.Text = Left(Me.TextBoxDUNS.Text, 9)
+    End If
+    
+    If Me.TextBoxDS.Text <> "8" Then
+        MsgBox "I see that you want to make list by DUNS, so I put DS = 8 for you..."
+        Me.TextBoxDS.Text = 8
+    End If
+    
+    If Me.TextBoxDUNS.Text = "" Then
+        If Me.TextBoxDS.Text = "8" Then
+            MsgBox "I am removing 8 from DS"
+            Me.TextBoxDS.Text = ""
+        End If
+    End If
 End Sub
 
 Private Sub UserForm_Initialize()

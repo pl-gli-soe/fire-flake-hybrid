@@ -28,7 +28,7 @@ Public Sub shplan(Optional ByRef wsh As Worksheet, Optional cont_runout As Boole
     Dim szablon As ILayout
     Set szablon = New DailyLayout
     szablon.InitLayout
-    Cells(1, 1) = "shipping plan " & CStr(Now) & " " & CStr(wsh.Cells(1, 1))
+    ' Cells(1, 1) = "shipping plan " & CStr(Now) & " " & CStr(wsh.Cells(1, 1))
     
     adres = przygotowanie_adresu(wsh)
     Set pivot_table_cache = Nothing

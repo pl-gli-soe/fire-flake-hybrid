@@ -5,6 +5,12 @@ Public Sub listmaker(ic As IRibbonControl)
 End Sub
 
 Public Sub clearlist(c As IRibbonControl)
+    inner_clearlist
+End Sub
+
+Public Sub inner_clearlist()
+
+
     If Sheets("input").FilterMode = True Then
         Sheets("input").ShowAllData
     End If
@@ -38,7 +44,7 @@ Public Function makelistaftershow(m As MGO, pop As MS9POP00, Optional ByRef star
     pop.firstDOH = MakeListForm.TextBoxDOH1
     pop.secDOH = MakeListForm.TextBoxDOH2
     If plt = "" Then
-        m.putString Sheets("register").Range("makelistregion").Value, 3, 5
+        m.putString ThisWorkbook.Sheets("register").Range("makelistregion").Value, 3, 5
     Else
         m.putString CStr(plt), 3, 13
     End If
@@ -110,6 +116,8 @@ Public Function makelistaftershow(m As MGO, pop As MS9POP00, Optional ByRef star
     
     
     Set makelistaftershow = start
+    
+    
 End Function
 
 Private Function check_is_the_end(ByRef i As Integer)

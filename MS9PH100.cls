@@ -61,6 +61,6 @@ Public Function DUNS(i As Integer) As String
     DUNS = Trim(Sess0.screen.getString(11 + 1 * i, 65, 9))
 End Function
 
-Public Function Qty(i As Integer) As String
-    Qty = Trim(Sess0.screen.getString(11 + 1 * i, 35, 10))
+Public Function QTY(i As Integer) As String
+    QTY = Trim(Sess0.screen.getString(11 + 1 * i, 35, 10))
 End Function

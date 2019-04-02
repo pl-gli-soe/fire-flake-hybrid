@@ -26,6 +26,7 @@ Private scr_zk7ppum0 As ZK7PPUM0
 Private scr_zk7pprul As ZK7PPRUL
 Private scr_zk7pprhr As ZK7PPRHR
 Private scr_zk7ppud0 As ZK7PPUD0
+Private scr_zk7prosl As ZK7PROSL
 
 Public Sub refresh()
     
@@ -81,6 +82,10 @@ Private Sub Class_Initialize()
     
     Set scr_zk7ppud0 = New ZK7PPUD0
     scr_zk7ppud0.sesja = Sess0
+    waitForMgo
+    
+    Set scr_zk7prosl = New ZK7PROSL
+    scr_zk7prosl.sesja = Sess0
     waitForMgo
     
 End Sub
@@ -169,6 +174,21 @@ Public Function convertToDateFromZK7PPUM0Date(zk7ppum0_date As String) As Date
     Dim d As String
     d = CStr(Left(CStr(Format(Now, "yyyy")), 2)) & Right(CStr(zk7ppum0_date), 2) & "-" & CStr(FromMGOMonth(Right(Left(CStr(zk7ppum0_date), 5), 2))) & "-" & Left(CStr(zk7ppum0_date), 2)
     convertToDateFromZK7PPUM0Date = CDate(Format(d, "yyyy-mm-dd"))
+End Function
+
+Public Function convertToDateFromZK7PROSLDate(zk7prosl_date As String) As Date
+    Dim d As String
+    
+    ' dd.mm.yy to  =>
+    
+    d = _
+        CStr(Left(CStr(Format(Now, "yyyy")), 2)) & Right(CStr(zk7prosl_date), 2) & _
+        "-" & _
+            CStr(FromMGOMonth(Right(Left(CStr(zk7prosl_date), 5), 2))) & _
+                "-" & _
+                    Left(CStr(zk7prosl_date), 2)
+                    
+    convertToDateFromZK7PROSLDate = CDate(Format(d, "yyyy-mm-dd"))
 End Function
 
 Public Function convertToMgoLongDate(n_date As Date) As String
@@ -343,6 +363,15 @@ End Property
 
 Public Property Get pZK7PPUD0() As ZK7PPUD0
     Set pZK7PPUD0 = scr_zk7ppud0
+End Property
+
+
+Public Property Let pZK7PROSL(RHS As ZK7PROSL)
+    Set scr_zk7prosl = RHS
+End Property
+
+Public Property Get pZK7PROSL() As ZK7PROSL
+    Set pZK7PROSL = scr_zk7prosl
 End Property
 
 

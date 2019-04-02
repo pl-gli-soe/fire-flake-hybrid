@@ -14,6 +14,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
+
+
 ' WEEEKLY RUN
 Private Sub CommandButton1_Click()
     MainForm.hide
@@ -27,16 +29,16 @@ Private Sub CommandButton1_Click()
     
     If MainForm.DTPicker1.Enabled = True Then
         ff.p_limit = CDate(MainForm.DTPicker1.Value)
-        Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
+        ThisWorkbook.Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
     Else
-        Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ThisWorkbook.Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit = CDate(Now + 50 * 7)
     End If
     
     ' ffh 3.99
     If MainForm.DTPicker2.Enabled = True Then
         ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
-        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+        ThisWorkbook.Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
     Else
         Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit_delivery = CDate(Now + 100)
@@ -57,10 +59,20 @@ Private Sub CommandButton1_Click()
     ' new in 3.9z
     If Me.CheckBoxIPASN.Value = True Then
         ff.ip = True
-        Sheets("register").Range("IPasZERO") = 1
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 1
     Else
         ff.ip = False
-        Sheets("register").Range("IPasZERO") = 0
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 0
+    End If
+    
+    
+    ' new in 4.05
+    If Me.CheckBoxPROSL.Value = True Then
+        ff.prosl = True
+        ThisWorkbook.Sheets("register").Range("PROSL") = 1
+    Else
+        ff.prosl = False
+        ThisWorkbook.Sheets("register").Range("PROSL") = 0
     End If
     
     
@@ -102,21 +114,21 @@ Private Sub RunDaily_Click()
     Dim ff As FireFlakeHybrid
     Set ff = New FireFlakeHybrid
     
-    Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
+    ThisWorkbook.Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
     
     
     ' na potrzeby tylko i wylacznie ffh'a 3.96.1
     If Me.CheckboxMiscFromDRqm.Value Then
-        Sheets("register").Range("miscFromDailyRqm") = 1
+        ThisWorkbook.Sheets("register").Range("miscFromDailyRqm") = 1
     Else
-        Sheets("register").Range("miscFromDailyRqm") = 0
+        ThisWorkbook.Sheets("register").Range("miscFromDailyRqm") = 0
     End If
     
     If MainForm.DTPicker1.Enabled = True Then
         ff.p_limit = CDate(MainForm.DTPicker1.Value)
-        Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
+        ThisWorkbook.Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
     Else
-        Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ThisWorkbook.Sheets("register").Range("limitDate") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit = CDate(Now + 100)
     End If
     
@@ -124,7 +136,7 @@ Private Sub RunDaily_Click()
     ' ffh 3.99
     If MainForm.DTPicker2.Enabled = True Then
         ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
-        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+        ThisWorkbook.Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
     Else
         Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit_delivery = CDate(Now + 100)
@@ -140,6 +152,25 @@ Private Sub RunDaily_Click()
     '
     '
     ' ff.create_tear_down New ItemHourly
+    
+    ' new in 3.9z
+    If Me.CheckBoxIPASN.Value = True Then
+        ff.ip = True
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 1
+    Else
+        ff.ip = False
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 0
+    End If
+    
+    
+    ' new in 4.05
+    If Me.CheckBoxPROSL.Value = True Then
+        ff.prosl = True
+        ThisWorkbook.Sheets("register").Range("PROSL") = 1
+    Else
+        ff.prosl = False
+        ThisWorkbook.Sheets("register").Range("PROSL") = 0
+    End If
     
     
     
@@ -159,22 +190,22 @@ Private Sub RunHourly_Click()
     Dim ff As FireFlakeHybrid
     Set ff = New FireFlakeHybrid
     
-    Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
+    ThisWorkbook.Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
     
     If MainForm.DTPicker1.Enabled = True Then
         ff.p_limit = CDate(MainForm.DTPicker1.Value)
-        Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
+        ThisWorkbook.Sheets("register").Range("limitDate") = CStr(CDate(ff.p_limit))
     Else
-        Sheets("register").Range("limitDate") = CDate(Now + 100)
+        ThisWorkbook.Sheets("register").Range("limitDate") = CDate(Now + 100)
         ff.p_limit = CDate(Now + 100)
     End If
     
     ' ffh 3.99
     If MainForm.DTPicker2.Enabled = True Then
         ff.p_limit_delivery = CDate(MainForm.DTPicker2.Value)
-        Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
+        ThisWorkbook.Sheets("register").Range("limitDateDelivery") = CStr(CDate(ff.p_limit_delivery))
     Else
-        Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
+        ThisWorkbook.Sheets("register").Range("limitDateDelivery") = CStr(Format(CDate(Now + 100), "yyyy-mm-dd"))
         ff.p_limit_delivery = CDate(Now + 100)
     End If
     ' tutaj w sposob prosty
@@ -188,6 +219,24 @@ Private Sub RunHourly_Click()
     '
     '
     ' ff.create_tear_down New ItemHourly
+    ' new in 3.9z
+    If Me.CheckBoxIPASN.Value = True Then
+        ff.ip = True
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 1
+    Else
+        ff.ip = False
+        ThisWorkbook.Sheets("register").Range("IPasZERO") = 0
+    End If
+    
+    
+    ' new in 4.05
+    If Me.CheckBoxPROSL.Value = True Then
+        ff.prosl = True
+        ThisWorkbook.Sheets("register").Range("PROSL") = 1
+    Else
+        ff.prosl = False
+        ThisWorkbook.Sheets("register").Range("PROSL") = 0
+    End If
     
     
     
@@ -204,7 +253,7 @@ Private Sub TemplateBtn_Click()
     TemplateConfig.StartDTPicker.Value = Now
     TemplateConfig.EndDTPicker.Value = Now
     
-    Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
+    ThisWorkbook.Sheets("register").Range("redpink") = Me.ComboBoxColors.Value
     
     TemplateConfig.show
 End Sub
