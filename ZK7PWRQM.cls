@@ -74,8 +74,26 @@ Public Function day_from_cw(cw As Integer, which_day As Integer) As Date
     
     diff = cw - current_cw
     ' pamietaj ze jesli chodzi o formuly weekday to 1 - sunday, 2 - monday i tak dalej
-    ' 8 dlatego, ze liczymy poniedzialek od 2 stad musimy kawalek dalej pojsc
-    day_from_cw = Now + diff * 7 - 7 + (8 + which_day - current_weekday)
+    ' 8 dlatego, ze liczymy poniedzialek od 2 stad musimy kawalek dalej pojsc - to jest jakis obsolete
+    
+    ' zatem wrocilem do 7 + which_day - current_weekday
+    If diff >= 0 Then
+        day_from_cw = Date + diff * 7 - 7 + (7 + which_day - current_weekday)
+    Else
+        ' tj wskakujemy w nowy rok
+        ' i niestsety diff musi przejsc bardziej skomplikowana droge
+        poniedzialek = CDate(Date - current_weekday + 1)
+        
+        offset_poniedzialku_pod_okreslenie_diffu = 0
+        Do
+            poniedzialek = poniedzialek + 7
+            
+            offset_poniedzialku_pod_okreslenie_diffu = offset_poniedzialku_pod_okreslenie_diffu + 1
+        Loop Until Int(Application.WorksheetFunction.IsoWeekNum(CDbl(poniedzialek))) = Int(cw)
+        
+        diff = offset_poniedzialku_pod_okreslenie_diffu
+        day_from_cw = Date + diff * 7 - 7 + (7 + which_day - current_weekday)
+    End If
     
 End Function
 

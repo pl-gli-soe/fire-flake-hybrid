@@ -45,6 +45,8 @@ Property Get getIsManualFill()
 End Property
 
 Property Get getCustomRqmTable() As Range
+
+    ' Debug.Print "rqm_adr_tabel.Address " & rqm_adr_table.Address ' OK
     Set getCustomRqmTable = rqm_adr_table
 End Property
 
