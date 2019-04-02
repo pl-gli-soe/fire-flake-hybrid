@@ -142,7 +142,7 @@ Private Sub IIteracja_DownloadGeneralData(i_mgo As MGO, ByRef sh As StatusHandle
         IIteracja_Qhold = i_mgo.pMS9POP00.QHD
         IIteracja_MISC = i_mgo.pMS9POP00.MISC
         IIteracja_StdPack = i_mgo.pMS9POP00.STD_PACK
-        IIteracja_SheetDef = "hourly " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
+        IIteracja_SheetDef = "hourly " & CStr(ThisWorkbook.Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
         
         Set pop = i_mgo.pMS9POP00
         txt = _
@@ -373,7 +373,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     Dim cl As Range
     ' zmienna z lokalnej na instancyjna
     ' Dim ef As EbalFormulaz    Set ef = New EbalFormula
-    kol = Sheets("register").Range("firstColumnHourly")
+    kol = ThisWorkbook.Sheets("register").Range("firstColumnHourly")
     
     For Each item In item_collection
     
@@ -409,7 +409,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     End If
     var_helper = 0
     Dim cmnt As String
-    kol = Sheets("register").Range("firstColumn")
+    kol = ThisWorkbook.Sheets("register").Range("firstColumn")
     
     cmnt = ""
     For Each nyrtrans In not_yet_received_collection
@@ -511,8 +511,8 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
         Next e_item
         ' =================================================================================
         
-        If Sheets("register").Range("ActualQtyIntervals") < iteracja Then
-            Sheets("register").Range("ActualQtyIntervals") = iteracja
+        If ThisWorkbook.Sheets("register").Range("ActualQtyIntervals") < iteracja Then
+            ThisWorkbook.Sheets("register").Range("ActualQtyIntervals") = iteracja
         End If
     
     End If
