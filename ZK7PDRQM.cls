@@ -75,14 +75,30 @@ Public Function PLT_TOTAL(SCREEN_COLUMN As Integer, ByRef pf8_pressed As Boolean
     plttotalrow = fooplttotalrow(pf8_pressed)
     
     
-    If Sheets("register").Range("miscFromDailyRqm") = 1 Then
-        PLT_TOTAL = _
-            CLng(Trim(Sess0.screen.getString(plttotalrow, 22 + 8 * SCREEN_COLUMN, 7))) - _
-            CLng(Trim(Sess0.screen.getString(plttotalrow - 1, 22 + 8 * SCREEN_COLUMN, 7)))
+    Dim misc_value As Long
+    misc_value = 0
+    
+    
+    If Int(ThisWorkbook.Sheets("register").Range("miscFromDailyRqm")) = 1 Then
+    
+        For x = 1 To 12
+        
+        
+            If Trim(Sess0.screen.getString(plttotalrow - 1, 1, 10)) Like "*MISC*OTHR*" Then
+                misc_value = CLng(Trim(Sess0.screen.getString(plttotalrow - 1, 22 + 8 * SCREEN_COLUMN, 12)))
+                Exit For
+            End If
             
-    Else
-        PLT_TOTAL = Trim(Sess0.screen.getString(plttotalrow, 22 + 8 * SCREEN_COLUMN, 7))
+        Next x
+    
     End If
+    
+    
+
+    PLT_TOTAL = _
+        CLng(Trim(Sess0.screen.getString(plttotalrow, 22 + 8 * SCREEN_COLUMN, 7))) - CLng(misc_value)
+            
+
     
     
 End Function

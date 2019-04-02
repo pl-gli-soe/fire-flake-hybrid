@@ -24,8 +24,7 @@ Implements ILayout
 Implements IEbalLayout
 Implements IRqmLayout
 
-Dim rozwijanie_dnia As RozwijanieDnia
-Dim zwijanie_dnia As ZwijanieDnia
+
 Dim catch_error As CatchError
 Private ef As EbalFormula
 Private p_filtracja As Filtracja
@@ -372,10 +371,10 @@ Private Sub ILayout_GenerujReszteRusztownia()
         
         ' iteracja dnia oraz weekday
         item_d = item_d + 7
-        wday = Weekday(item_d, vbMonday)
+        wday = Weekday(item_d, vbMonday) - 1
         
         stf = Replace(tf.formula, "=", "")
-        stf = stf & " + " & CStr(7 * (1 + (x - Int(Sheets("register").Range("firstColumn"))) / 3))
+        stf = stf & " + " & CStr(7 * (1 + (x - Int(Sheets("register").Range("firstColumn"))) / 3)) & "-" & wday
         swn = Replace(wn.formula, "-1", stf)
         swd = Replace(wd.formula, "-1", stf)
     
@@ -479,10 +478,7 @@ Private Sub ILayout_RozwinGodzinowke(ktorydzien As Range)
     
     'Dim ref_color As Long
     ' ref_color = RGB(200, 200, 200)
-    
-    Set rozwijanie_dnia = New RozwijanieDnia
-    Set rozwijanie_dnia = Nothing
-    
+
     sh.hide
     
 End Sub
@@ -505,9 +501,7 @@ Private Sub ILayout_ZwinGodzinowke(ktorydzien As Range)
     Set catch_error = Nothing
     
     If ActiveSheet.AutoFilterMode Then ActiveSheet.AutoFilterMode = False
-     
-     Set zwijanie_dnia = New ZwijanieDnia
-     Set zwijanie_dnia = Nothing
+
     
 End Sub
 
