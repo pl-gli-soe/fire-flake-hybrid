@@ -11,9 +11,9 @@ Implements ITransit
 
 Private route As String
 Private iNAME As String
-Private Qty As Long
-Private delivery_date As Date
-Private delivery_time As Date
+Private QTY As Long
+Private DELIVERY_DATE As Date
+Private DELIVERY_TIME As Date
 Private pickup_date As Date
 Private pickup_time As Date
 Private kontener As String
@@ -23,6 +23,7 @@ Private st As String
 Private not_yet_received As Boolean
 Private out_of_scope As Boolean
 Private on_pop As Boolean
+Private on_prosl As Boolean
 Private tt_less_than_24h As Boolean
 
 
@@ -30,22 +31,23 @@ Private tt_less_than_24h As Boolean
 Private Sub Class_Initialize()
     not_yet_received = True
     out_of_scope = False
+    on_prosl = False
 End Sub
 
 Private Property Let ITransit_mDeliveryDate(RHS As Date)
-    delivery_date = RHS
+    DELIVERY_DATE = RHS
 End Property
 
 Private Property Get ITransit_mDeliveryDate() As Date
-    ITransit_mDeliveryDate = delivery_date
+    ITransit_mDeliveryDate = DELIVERY_DATE
 End Property
 
 Private Property Let ITransit_mDeliveryTime(RHS As Date)
-    delivery_time = RHS
+    DELIVERY_TIME = RHS
 End Property
 
 Private Property Get ITransit_mDeliveryTime() As Date
-    ITransit_mDeliveryTime = delivery_time
+    ITransit_mDeliveryTime = DELIVERY_TIME
 End Property
 
 Private Property Let ITransit_mName(RHS As String)
@@ -70,6 +72,14 @@ End Property
 
 Private Property Get ITransit_mOnPop() As Boolean
     ITransit_mOnPop = on_pop
+End Property
+
+Private Property Let ITransit_mOnProsl(RHS As Boolean)
+    on_prosl = RHS
+End Property
+
+Private Property Get ITransit_mOnProsl() As Boolean
+    ITransit_mOnProsl = on_prosl
 End Property
 
 Private Property Let ITransit_mOutOfScope(RHS As Boolean)
@@ -97,11 +107,11 @@ Private Property Get ITransit_mPickupTime() As Date
 End Property
 
 Private Property Let ITransit_mQty(RHS As Long)
-    Qty = RHS
+    QTY = RHS
 End Property
 
 Private Property Get ITransit_mQty() As Long
-    ITransit_mQty = Qty
+    ITransit_mQty = QTY
 End Property
 
 Private Property Let ITransit_mRoute(RHS As String)

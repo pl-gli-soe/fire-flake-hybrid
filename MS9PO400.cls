@@ -43,8 +43,8 @@ End Property
 
 
 
-Public Function Qty(i As Integer) As String
-    Qty = Trim(Sess0.screen.getString(6 + 2 * i, 5, 8))
+Public Function QTY(i As Integer) As String
+    QTY = Trim(Sess0.screen.getString(6 + 2 * i, 5, 8))
 End Function
 Public Function SDATE(i As Integer) As String
     SDATE = Trim(Sess0.screen.getString(6 + 2 * i, 14, 6))
