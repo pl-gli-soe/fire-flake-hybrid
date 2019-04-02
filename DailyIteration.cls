@@ -136,7 +136,7 @@ Private Sub IIteracja_DownloadGeneralData(ByRef i_mgo As MGO, ByRef sh As Status
         IIteracja_Qhold = i_mgo.pMS9POP00.QHD
         IIteracja_MISC = i_mgo.pMS9POP00.MISC
         IIteracja_StdPack = i_mgo.pMS9POP00.STD_PACK
-        IIteracja_SheetDef = "daily " & CStr(Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
+        IIteracja_SheetDef = "daily " & CStr(ThisWorkbook.Sheets("register").Range("redpink")) & " " & CStr(Now) & " limit on scheduled PUSes: " & limit & " and del limit: " & limit_del & " " & ActiveSheet.Name
         
         
         ' komentarz z kompleksowymi danymi z POPa
@@ -296,8 +296,8 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     
     ' MsgBox Int(Sheets("register").Range("itemDays")) & "    " & Int(tempdate - CDate(Format(Now, "yyyy-mm-dd")))
     
-    If Int(Sheets("register").Range("itemDays")) < Int(tempdate - CDate(Format(Now, "yyyy-mm-dd"))) Then
-        Sheets("register").Range("itemDays") = Int(tempdate - CDate(Format(Now, "yyyy-mm-dd")))
+    If Int(ThisWorkbook.Sheets("register").Range("itemDays")) < Int(tempdate - CDate(Format(Now, "yyyy-mm-dd"))) Then
+        ThisWorkbook.Sheets("register").Range("itemDays") = Int(tempdate - CDate(Format(Now, "yyyy-mm-dd")))
         ' MsgBox Sheets("register").Range("itemDays")
     End If
     
@@ -331,7 +331,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
     ' z lokalnej zmiennej na zmienna instancyjna
     ' Dim ef As EbalFormula
     Set ef = New EbalFormula
-    kol = Sheets("register").Range("firstColumn") + 2
+    kol = ThisWorkbook.Sheets("register").Range("firstColumn") + 2
     
     For Each item In item_collection
     
@@ -361,7 +361,7 @@ Private Sub IIteracja_PrepareItemCollection(i_mgo As MGO, item As IItem, limit A
         Dim var_helper As Integer
         var_helper = 0
         Dim cmnt As String
-        kol = Sheets("register").Range("firstColumn")
+        kol = ThisWorkbook.Sheets("register").Range("firstColumn")
         
         cmnt = ""
         For Each nyrtrans In not_yet_received_collection
@@ -708,7 +708,7 @@ Private Sub fill_collection_with_manual_data(item As IItem, limit As Date, Optio
             If x > instance_tokenizator.getCustomRqmTable.COUNT Then
                 item.mReq = 0
             Else
-                item.mReq = instance_tokenizator.getCustomRqmTable.item(x, 1)
+                item.mReq = instance_tokenizator.getCustomRqmTable.item(x)
             End If
         End If
         

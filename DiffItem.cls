@@ -11,8 +11,8 @@ Public pn As String
 Public plt As String
 Public Name As String
 Public pickup_date As Date
-Public delivery_date As Date
-Public Qty As Long
+Public DELIVERY_DATE As Date
+Public QTY As Long
 Public sum_of_regular_transit As Long
 Public sum_of_qty_in_parent_cell As Long
 Public istransit As Boolean
@@ -25,7 +25,7 @@ Public route As String
 Public fst_runout As String
 
 Public Property Get differenceQty() As Long
-    differenceQty = sum_of_qty_in_parent_cell - Qty
+    differenceQty = sum_of_qty_in_parent_cell - QTY
 End Property
 
 Public Property Get manualAdjustment() As Long
@@ -38,7 +38,7 @@ Public Sub set_exact_value()
 
     If istransit Then
         If manualAdjustment = 0 Then
-            exact_value = Qty
+            exact_value = QTY
         Else
     
                 exact_value = manualAdjustment

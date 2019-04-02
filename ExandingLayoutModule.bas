@@ -8,7 +8,7 @@ Public Sub rozwin_godz(ictrl As IRibbonControl)
     RozwinGodz.EnableMGOCheckBox.Value = True
     
     RozwinGodz.IntervalComboBox.Clear
-    For Each r In Sheets("register").Range("intervalsLib")
+    For Each r In ThisWorkbook.Sheets("register").Range("intervalsLib")
         RozwinGodz.IntervalComboBox.AddItem r.Value
     Next r
 
@@ -20,9 +20,9 @@ End Sub
 Public Sub zwin_godz(ictrl As IRibbonControl)
     Dim l As ILayout
     Set l = New DailyLayout
-    Sheets("register").Range("w_macro") = 1
+    ThisWorkbook.Sheets("register").Range("w_macro") = 1
     l.ZwinGodzinowke ActiveCell
-    Sheets("register").Range("w_macro") = 0
+    ThisWorkbook.Sheets("register").Range("w_macro") = 0
 End Sub
 
 Public Sub tylkoEbal(ictrl As IRibbonControl)

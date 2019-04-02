@@ -27,8 +27,7 @@ Implements ILayout
 Implements IEbalLayout
 Implements IRqmLayout
 
-Dim rozwijanie_dnia As RozwijanieDnia
-Dim zwijanie_dnia As ZwijanieDnia
+
 Dim catch_error As CatchError
 Private ef As EbalFormula
 Private p_filtracja As Filtracja
@@ -464,9 +463,6 @@ Private Sub ILayout_RozwinGodzinowke(ktorydzien As Range)
     'Dim ref_color As Long
     ' ref_color = RGB(200, 200, 200)
     
-    Set rozwijanie_dnia = New RozwijanieDnia
-    Set rozwijanie_dnia = Nothing
-    
     sh.hide
     
 End Sub
@@ -489,9 +485,7 @@ Private Sub ILayout_ZwinGodzinowke(ktorydzien As Range)
     Set catch_error = Nothing
     
     If ActiveSheet.AutoFilterMode Then ActiveSheet.AutoFilterMode = False
-     
-     Set zwijanie_dnia = New ZwijanieDnia
-     Set zwijanie_dnia = Nothing
+
     
 End Sub
 
