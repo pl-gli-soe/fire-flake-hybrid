@@ -67,6 +67,14 @@ End Property
 Property Let mOnPop(arg As Boolean)
 End Property
 
+
+Property Get mOnProsl() As Boolean
+End Property
+
+Property Let mOnProsl(arg As Boolean)
+End Property
+
+
 Property Get mTTLessThan24h() As Boolean
 End Property
 
